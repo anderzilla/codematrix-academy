@@ -62,6 +62,27 @@ def _veredito(texto: str) -> str:
     return m.group(1).upper() if m else "SEM_VEREDITO"
 
 
+ARQUIVOS_CURSO = {  # quando a pasta é um curso (cursos/<id>/ com curso.yaml)
+    "oferta": ["curso.yaml"],
+    "conteudo": ["pocket/roteiros/*.md", "completo/roteiros/*.md"],
+    "visual": ["pocket/cenas/*.json"],
+    "pagina": ["paginas/pocket.md", "paginas/completo.md"],
+    "campanha": ["marketing/anuncios.md", "marketing/calendario-7-dias.md"],
+    "venda": ["curso.yaml", "kiwify/montagem.md"],
+    "publicacao": ["paginas/pocket.md", "paginas/completo.md", "retencao/jornada.md"],
+}
+LIMITE_MATERIAL = 12000  # caracteres por parecer (modelos locais têm contexto curto)
+
+
+def _arquivos_da_etapa(pasta: Path, etapa: dict) -> list[Path]:
+    if (pasta / "curso.yaml").exists():
+        saida = []
+        for padrao in ARQUIVOS_CURSO.get(etapa["id"], []):
+            saida += sorted(pasta.glob(padrao))
+        return saida
+    return [pasta / f for f in etapa.get("arquivos", []) if (pasta / f).exists()]
+
+
 def painel(pasta: Path, etapas: list[str] | None = None, motor: str | None = None) -> list[dict]:
     """Roda os revisores de cada etapa sobre os arquivos da etapa e grava pareceres/<etapa>__<agente>.md."""
     t = time()
@@ -70,11 +91,11 @@ def painel(pasta: Path, etapas: list[str] | None = None, motor: str | None = Non
     destino.mkdir(exist_ok=True)
     resultado = []
     for e in t["etapas"]:
-        if e["id"] not in etapas or not e.get("arquivos"):
+        if e["id"] not in etapas:
             continue
         material = "\n\n".join(
-            f"### {f}\n{(pasta / f).read_text(encoding='utf-8')[:6000]}" for f in e["arquivos"] if (pasta / f).exists()
-        )
+            f"### {f.relative_to(pasta)}\n{f.read_text(encoding='utf-8')[:6000]}" for f in _arquivos_da_etapa(pasta, e)
+        )[:LIMITE_MATERIAL]
         if not material:
             continue
         for rid in e["revisores"]:

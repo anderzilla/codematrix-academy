@@ -1,0 +1,15 @@
+# Preencha depois de publicar na Kiwify (fonte para o site e para o rex). Copie para cursos/<id>/kiwify/links.yaml
+pocket:
+  produto_id: ""
+  checkout_url: ""
+  preco_publicado: 0
+completo:
+  produto_id: ""
+  checkout_url: ""
+  preco_publicado: 0
+upgrade:
+  produto_id: ""
+  checkout_url: ""
+  preco_publicado: 0
+area_membros_url: ""
+publicado_em: ""        # AAAA-MM-DD

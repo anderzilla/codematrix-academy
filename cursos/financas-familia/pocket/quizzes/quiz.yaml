@@ -1,0 +1,23 @@
+# Quiz do Pocket — cadastrar como conteúdo "Quiz" no fim do curso, na área de membros da Kiwify
+titulo: "Quiz — Descubra para onde vai o seu dinheiro"
+perguntas:
+  - pergunta: "Aluguel, escola e internet são, em geral, gastos de que grupo?"
+    opcoes: ["Fixos", "Essenciais variáveis", "Livres"]
+    correta: 0
+    explicacao: "Têm valor quase igual todo mês."
+  - pergunta: "Por onde é mais rápido começar a ajustar o orçamento?"
+    opcoes: ["Pelos gastos fixos", "Pelos gastos livres", "Pelas entradas"]
+    correta: 1
+    explicacao: "Gastos livres dependem só de escolhas e dão resultado na mesma semana."
+  - pergunta: "Dez pedidos de delivery de R$ 45 no mês somam:"
+    opcoes: ["R$ 45", "R$ 225", "R$ 450"]
+    correta: 2
+    explicacao: "O vazamento está no pequeno que se repete."
+  - pergunta: "Qual é o jeito certo de definir um corte?"
+    opcoes: ["Cortar tudo de uma vez", "Ação pequena, com valor e data de início", "Esperar sobrar dinheiro"]
+    correta: 1
+    explicacao: "Corte pequeno, com valor e data, é o que se mantém."
+  - pergunta: "Na planilha, quais células você preenche?"
+    opcoes: ["As amarelas", "As brancas com fórmulas", "Todas"]
+    correta: 0
+    explicacao: "As brancas têm fórmulas e calculam sozinhas."

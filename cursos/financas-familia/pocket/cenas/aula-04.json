@@ -1,0 +1,64 @@
+{
+  "titulo": "Seus 3 primeiros cortes sem sofrimento",
+  "tema": "pessoal",
+  "cenas": [
+    {
+      "tipo": "capa",
+      "eyebrow": "Pocket · Aula 4",
+      "titulo": "Seus 3 primeiros *cortes*",
+      "subtitulo": "Pequenos, com valor e com data.",
+      "narracao": "Corte que dá certo é corte pequeno, com valor e com data.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 1,
+      "total": 5
+    },
+    {
+      "tipo": "topicos",
+      "titulo": "Para cada categoria, *uma ação*",
+      "itens": [
+        "Reduzir: 10 → 4 pedidos",
+        "Trocar: conta sem tarifa",
+        "Cancelar: 2 assinaturas"
+      ],
+      "personagem": "trix-dica",
+      "narracao": "Para cada categoria, escolha uma ação: reduzir, trocar ou cancelar. Por exemplo, de dez para quatro pedidos de delivery, uma conta sem tarifa e duas assinaturas canceladas.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 2,
+      "total": 5
+    },
+    {
+      "tipo": "passo",
+      "numero": 1,
+      "titulo": "Preencha *Meus cortes*",
+      "texto": "Ação, valor por mês e data de início. A planilha calcula o ano.",
+      "personagem": "trix-ok",
+      "narracao": "No quadro Meus cortes, escreva a ação, o valor por mês e a data de início. A planilha mostra quanto sobra no mês e no ano.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 3,
+      "total": 5
+    },
+    {
+      "tipo": "destaque",
+      "texto": "Cortar tudo de uma vez é o jeito mais rápido de *desistir*.",
+      "narracao": "Um erro comum é cortar tudo de uma vez e desistir na segunda semana. Três cortes bem feitos valem mais.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 4,
+      "total": 5
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Última aula: o que fazer com o que *sobra*",
+      "texto": "Reserva, contas do ano e metas.",
+      "botao": "Ir para a aula 5",
+      "narracao": "Na última aula, o que fazer com esse dinheiro.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 5,
+      "total": 5
+    }
+  ]
+}

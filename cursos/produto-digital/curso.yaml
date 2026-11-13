@@ -1,0 +1,39 @@
+id: produto-digital
+tema: renda
+pocket:
+  titulo: "Valide sua ideia de produto digital em 1 dia"
+  subtitulo: "Escolha o tema, teste a demanda com pesquisa gratuita e decida antes de gastar uma semana produzindo."
+  preco_proposto: 37
+  entregavel: "Ideia validada (ou descartada) com checklist e pesquisa de 3 fontes"
+  aulas:
+    - {n: 1, titulo: "Os 3 tipos de produto que vendem (e o seu)", minutos: 7, personagem: trix-ola}
+    - {n: 2, titulo: "Pesquisa de demanda em 30 minutos", minutos: 9, personagem: trix-explica}
+    - {n: 3, titulo: "Os erros que fazem ninguém comprar", minutos: 6, personagem: trix-alerta}
+    - {n: 4, titulo: "Teste rápido: página simples e 10 conversas", minutos: 8, personagem: trix-estuda}
+    - {n: 5, titulo: "Próximo passo: do validado ao publicado", minutos: 4, personagem: trix-apresenta}
+  quiz: 5 perguntas
+  materiais: [checklist-validacao.pdf, roteiro-de-conversas.pdf]
+  bump: {titulo: "50 ideias de produto digital por área profissional", preco_proposto: 17}
+completo:
+  titulo: "Como criar seu primeiro produto digital do jeito certo"
+  subtitulo: "Escolha do tema, validação antes de produzir, criação com IA, página de vendas e publicação na Kiwify ou Hotmart."
+  preco_proposto: 297
+  entregaveis: [produto pronto, página de vendas, checkout configurado, plano de divulgação de 7 dias]
+  modulos:
+    - {n: 1, titulo: "Tema e validação", liberacao_dias: 0, aulas: ["Escolha do tema", "Validação com dados", "Promessa e avatar"], quiz: true}
+    - {n: 2, titulo: "Criação com IA", liberacao_dias: 0, aulas: ["Estrutura do produto", "Escrevendo com IA sem perder a sua voz", "Revisão e originalidade"], quiz: true}
+    - {n: 3, titulo: "Página de vendas", liberacao_dias: 2, aulas: ["Estrutura que converte", "Prova honesta", "Garantia e FAQ"], quiz: true}
+    - {n: 4, titulo: "Publicação na plataforma", liberacao_dias: 4, aulas: ["Cadastro e área de membros", "Checkout, bump e upsell", "Pixel e página de obrigado"], quiz: true}
+    - {n: 5, titulo: "Primeiras vendas sem anúncio", liberacao_dias: 6, aulas: ["Conteúdo de 7 dias", "Parcerias e afiliados", "Lista e WhatsApp"], quiz: true}
+    - {n: 6, titulo: "Medir e melhorar", liberacao_dias: 8, aulas: ["Métricas que importam", "Ajuste de promessa e preço", "Certificado e próximos passos"], material_final: apostila-produto-digital.pdf}
+  materiais: [modelos-de-pagina.zip]
+  bump: {titulo: "Pack de prompts para criar e-books e minicursos", preco_proposto: 37}
+  bonus: ["Checklist de publicação Kiwify/Hotmart", "Calendário de conteúdo de 30 dias"]
+marketing:
+  angulo: "Valide a ideia antes de gastar uma semana produzindo."
+  publico: "Profissionais com conhecimento que querem uma fonte extra de renda; foco em janeiro (resoluções)"
+  ganchos:
+    - "Antes de gravar seu curso, faz esse teste de demanda."
+    - "Os 3 sinais de que ninguém vai comprar a sua ideia."
+    - "Eu montei uma fábrica de produtos digitais. Te mostro o primeiro passo."
+  cuidados: ["Sem promessa de faturamento ou renda (RC-002)", "Promessa de habilidade e entregável"]

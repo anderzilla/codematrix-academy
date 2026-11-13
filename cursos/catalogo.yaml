@@ -1,0 +1,24 @@
+# Catálogo da CodeMatrix Academy — fonte única dos cursos (RN-003: Pocket + Completo).
+# Preços são PROPOSTAS até o Founder aprovar (RN-001). Ordem = ordem do roteiro (planos/ROTEIRO-2026-11-16.md).
+cursos:
+  - {id: financas-familia, tema: pessoal,   ordem: 1, sprint: ["2026-11-16", "2026-11-17"]}
+  - {id: produto-digital,  tema: renda,     ordem: 2, sprint: ["2026-11-18", "2026-11-19"]}
+  - {id: whatsapp-vendas,  tema: marketing, ordem: 3, sprint: ["2026-11-23", "2026-11-24"]}
+  - {id: app-com-ia,       tema: ia,        ordem: 4, sprint: ["2026-11-25", "2026-11-26"]}
+
+# Trilha de cross-sell (quem conclui um curso recebe a oferta do próximo, com cupom de aluno)
+cross_sell:
+  financas-familia: [produto-digital]
+  produto-digital: [whatsapp-vendas, app-com-ia]
+  whatsapp-vendas: [produto-digital, app-com-ia]
+  app-com-ia: [produto-digital]
+
+combo_black_friday:
+  nome: "CodeMatrix Academy — todos os cursos"
+  inclui: [financas-familia, produto-digital, whatsapp-vendas, app-com-ia]
+  preco_proposto: 497          # soma dos completos ≈ R$ 1.088
+  datas: ["2026-11-27", "2026-11-30"]
+
+politica_upgrade:
+  credito_pocket: true         # quem comprou o Pocket abate o valor pago no Completo
+  validade_horas: 72           # prazo real, mostrado no upsell e no e-mail D3

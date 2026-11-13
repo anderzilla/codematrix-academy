@@ -1,0 +1,39 @@
+id: app-com-ia
+tema: ia
+pocket:
+  titulo: "Crie a primeira tela do seu app com IA em 1 hora"
+  subtitulo: "Do zero ao app rodando no seu celular: projeto criado, tela gerada com IA e primeiro teste no Expo Go."
+  preco_proposto: 47
+  entregavel: "Primeira tela do app rodando no celular"
+  aulas:
+    - {n: 1, titulo: "Ideia do app em uma frase", minutos: 6, personagem: trix-ola}
+    - {n: 2, titulo: "Ambiente pronto em 15 minutos", minutos: 10, personagem: trix-estuda}
+    - {n: 3, titulo: "Pedindo a tela certa para a IA", minutos: 9, personagem: trix-explica}
+    - {n: 4, titulo: "Erros que travam iniciantes", minutos: 6, personagem: trix-alerta}
+    - {n: 5, titulo: "Próximo passo: do protótipo à loja", minutos: 4, personagem: trix-apresenta}
+  quiz: 5 perguntas
+  materiais: [prompts-de-tela.pdf, checklist-ambiente.pdf]
+  bump: {titulo: "Pack de 40 prompts para telas de app", preco_proposto: 27}
+completo:
+  titulo: "Crie seu primeiro aplicativo móvel com IA como um profissional"
+  subtitulo: "Da ideia à publicação nas lojas: telas, navegação, dados, testes e publicação, com a IA como copiloto em cada etapa."
+  preco_proposto: 397
+  entregaveis: [app com 4 telas e navegação, dados salvos, testes no celular, build para as lojas, checklist de publicação]
+  modulos:
+    - {n: 1, titulo: "Ideia e protótipo", liberacao_dias: 0, aulas: ["Ideia e escopo mínimo", "Ambiente e projeto Expo", "Primeira tela com IA"], quiz: true}
+    - {n: 2, titulo: "Telas e navegação", liberacao_dias: 0, aulas: ["Navegação entre telas", "Componentes reutilizáveis", "Revisando o código da IA"], quiz: true}
+    - {n: 3, titulo: "Dados e estado", liberacao_dias: 3, aulas: ["Formulários", "Salvando dados no aparelho", "Listas e busca"], quiz: true}
+    - {n: 4, titulo: "Qualidade", liberacao_dias: 6, aulas: ["Testando no celular", "Erros comuns e como pedir ajuda à IA", "Acessibilidade básica"], quiz: true}
+    - {n: 5, titulo: "Publicação", liberacao_dias: 9, aulas: ["Ícone, splash e nome", "Build com EAS", "Contas e envio para as lojas"], quiz: true}
+    - {n: 6, titulo: "Conclusão", liberacao_dias: 12, aulas: ["Próximas funcionalidades", "Certificado e próximos passos"], material_final: apostila-app-com-ia.pdf}
+  materiais: [codigo-do-curso.zip]
+  bump: {titulo: "Templates de 5 apps prontos para adaptar", preco_proposto: 47}
+  bonus: ["Checklist de publicação nas lojas", "Live de dúvidas gravada"]
+marketing:
+  angulo: "Sua primeira tela rodando no celular em 1 hora."
+  publico: "Profissionais e empreendedores com ideia de app que não programam; devs iniciantes"
+  ganchos:
+    - "Eu publiquei apps para uma montadora usando IA. Te mostro como começar."
+    - "Seu app rodando no celular hoje, sem saber programar."
+    - "O erro que todo iniciante comete ao pedir código para a IA."
+  cuidados: ["Mostrar tela real", "Não prometer publicação em prazo irreal", "Contas de desenvolvedor das lojas têm custo — informar na página"]
