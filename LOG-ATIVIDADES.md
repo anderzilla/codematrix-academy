@@ -11,6 +11,31 @@ Comando: `rex log add --modelo <modelo> --agente <id> --tipo <tipo> --texto "...
 
 <!-- ENTRADAS: novas entradas são inseridas logo abaixo desta linha -->
 
+### 2026-11-13 13:47 · aprendizado · claude-opus-5-5 · estrategista-oferta
+Aula do Pocket = vídeo animado curto (cenas, ~1–2 min) + gravação de tela de 4–6 min usando o material; as cenas sozinhas não cobrem a duração-alvo do roteiro.
+
+
+### 2026-11-13 13:47 · decisao · claude-opus-5-5 · estrategista-oferta
+Founder pediu prompt para converter a área Cursos e kits do site em CodeMatrix Academy, a ser usado só depois dos 4 cursos publicados na Kiwify: planos/prompts/site-academy.md.
+
+
+### 2026-11-13 13:47 · skill · claude-opus-5-5 · estrategista-oferta
+Skill sprint-curso: executar o sprint de 2 dias de um curso a partir de rex sprint hoje e da pasta cursos/<id>/.
+
+
+### 2026-11-13 13:47 · melhoria · claude-opus-5-5 · estrategista-oferta
+Curso 1 (financas-familia) adiantado: 5 roteiros e 5 cenas do Pocket, quiz, planilha Pocket e planilha Completa com fórmulas testadas (scripts/planilhas/financas_familia.py), copy das páginas, anúncios, capas dos 8 produtos, jornada D0–D30, avaliação e remarketing.
+
+
+### 2026-11-13 13:47 · melhoria · claude-opus-5-5 · estrategista-oferta
+Estrutura versionada por curso em cursos/<id>/ (pocket, completo, paginas, marketing, retencao, kiwify, pareceres, metricas); catálogo dos 4 cursos com Pocket + Completo; comandos rex sprint (listar, hoje, iniciar, kiwify) e rex salvar (bloqueia segredos, e-mail/CPF e arquivos grandes fora do LFS); vídeos e áudios via Git LFS; painel e revisão funcionam na pasta do curso.
+
+
+### 2026-11-13 13:32 · decisao · claude-opus-5-5 · estrategista-oferta
+Founder definiu o modelo Pocket (barato, venda rápida, gera curiosidade) → Completo (mais caro, mais recursos) e sprint de 2 dias por curso com 5 passos. RN-003 atualizada. Roteiro a partir de 16/11 em planos/ROTEIRO-2026-11-16.md (ordem: Finanças, Produto digital, WhatsApp, App com IA; Black Friday 27–30/11).
+Arquivos: planos/ROTEIRO-2026-11-16.md, regras/negocio/RN-003.md
+
+
 ### 2026-11-13 13:16 · skill · claude-opus-5-5 · especialista-marketing-de-imagem
 Manual da marca, identidade visual e personagens gerado por scripts/gerar_manual.py (marca/manual/*.html e .pdf); regenerar sempre que mudar tokens, ilustrações ou poses.
 

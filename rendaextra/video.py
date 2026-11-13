@@ -257,7 +257,10 @@ def render(cenas_json: Path, vertical: bool = False, motor_voz: str | None = Non
     tk = marca.tokens()["video"]
     fps, tr = tk["fps"], tk["transicao_s"]
     leg = tk["legenda"]
-    pasta = cenas_json.parent / ("vertical" if vertical else "horizontal")
+    if cenas_json.parent.name == "cenas":  # estrutura do curso: cursos/<id>/<pocket|completo>/videos/<aula>-16x9/
+        pasta = cenas_json.parent.parent / "videos" / f"{cenas_json.stem}-{'9x16' if vertical else '16x9'}"
+    else:
+        pasta = cenas_json.parent / ("vertical" if vertical else "horizontal")
     for sub in ("quadros", "audio", "cenas", "legendas"):
         (pasta / sub).mkdir(parents=True, exist_ok=True)
     fundo = marca.tokens()["marca"]["fundo"].lstrip("#")
@@ -324,6 +327,9 @@ def render(cenas_json: Path, vertical: bool = False, motor_voz: str | None = Non
     (pasta / "legendas.srt").write_text(
         "".join(f"{n}\n{_ts_srt(a)} --> {_ts_srt(b_)}\n{t}\n\n" for n, (a, b_, t) in enumerate(srt, 1)), encoding="utf-8")
     (pasta / "video_mudo.mp4").unlink(missing_ok=True)
+    for sub in ("quadros", "audio", "cenas", "legendas"):  # intermediários não vão para o git
+        shutil.rmtree(pasta / sub, ignore_errors=True)
+    (pasta / "narracao.wav").unlink(missing_ok=True)
 
     # thumbnail
     capa = next((c for c in cenas if c["tipo"] == "capa"), cenas[0])

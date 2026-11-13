@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-from . import agentes, analytics, atividades, credentials, llm, marca, pipeline, rag, regras, scoring, video
+from . import agentes, analytics, cursos, atividades, credentials, llm, marca, pipeline, rag, regras, scoring, video
 from .config import caminho, settings
 from .db import sessao
 
@@ -159,6 +159,24 @@ def _video(a):
                                       movimento=not a.parado, legenda_queimada=not a.sem_legenda), ensure_ascii=False, indent=2))
 
 
+def _sprint(a):
+    if a.acao == "iniciar":
+        print("estrutura pronta em", cursos.iniciar(a.curso))
+    elif a.acao == "kiwify":
+        print((cursos.pasta(a.curso) / "kiwify" / "montagem.md").read_text(encoding="utf-8"))
+    elif a.acao == "listar":
+        for x in cursos.catalogo()["cursos"]:
+            c = cursos.curso(x["id"])
+            print(f"{x['ordem']}. {x['id']:<18} {x['sprint'][0]} → {x['sprint'][1]}  Pocket R$ {c['pocket']['preco_proposto']} · Completo R$ {c['completo']['preco_proposto']}  {c['completo']['titulo']}")
+    else:
+        from datetime import date
+        print(cursos.hoje(date.fromisoformat(a.data) if a.data else None))
+
+
+def _salvar(a):
+    print(cursos.salvar(a.mensagem, enviar=not a.sem_enviar))
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(prog="rex", description="Fábrica de Ofertas — Renda Extra")
     sp = p.add_subparsers(dest="cmd", required=True)
@@ -228,6 +246,12 @@ def main(argv=None):
     x.add_argument("--vertical", action="store_true"); x.add_argument("--voz", choices=["kokoro", "piper", "azure", "elevenlabs", "silencio"])
     x.add_argument("--parado", action="store_true", help="sem o zoom lento"); x.add_argument("--sem-legenda", action="store_true")
     x.set_defaults(f=_video)
+
+    x = sp.add_parser("sprint", help="sprints dos cursos (roteiro de 2 dias)")
+    x.add_argument("acao", choices=["hoje", "listar", "iniciar", "kiwify"]); x.add_argument("curso", nargs="?")
+    x.add_argument("--data", help="AAAA-MM-DD (padrão: hoje)"); x.set_defaults(f=_sprint)
+    x = sp.add_parser("salvar", help="confere segredos/dados pessoais/arquivos grandes e envia tudo ao git")
+    x.add_argument("-m", "--mensagem", required=True); x.add_argument("--sem-enviar", action="store_true"); x.set_defaults(f=_salvar)
 
     a = p.parse_args(argv)
     caminho("saidas").mkdir(parents=True, exist_ok=True)

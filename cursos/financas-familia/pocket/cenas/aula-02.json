@@ -1,0 +1,76 @@
+{
+  "titulo": "Preencha a planilha em 15 minutos",
+  "tema": "pessoal",
+  "cenas": [
+    {
+      "tipo": "capa",
+      "eyebrow": "Pocket · Aula 2",
+      "titulo": "Preencha a *planilha* em 15 minutos",
+      "subtitulo": "Duas abas, células amarelas, e a planilha faz as contas.",
+      "narracao": "Abra a planilha que está no material desta aula. Ela tem só duas abas: Mês e Resumo.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 1,
+      "total": 6
+    },
+    {
+      "tipo": "passo",
+      "numero": 1,
+      "titulo": "Lance as *entradas*",
+      "texto": "Salários, renda extra, tudo que entrou. Só nas células amarelas.",
+      "personagem": "trix-explica",
+      "narracao": "Primeiro, as entradas: salários, renda extra, tudo que entrou no mês. Você só preenche as células amarelas.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 2,
+      "total": 6
+    },
+    {
+      "tipo": "passo",
+      "numero": 2,
+      "titulo": "Lance os *gastos*",
+      "texto": "Data, descrição, valor e grupo: fixo, essencial ou livre.",
+      "narracao": "Depois, os gastos: data, descrição, valor e o grupo. A planilha soma tudo sozinha.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 3,
+      "total": 6
+    },
+    {
+      "tipo": "destaque",
+      "texto": "Atalho: copie as colunas do *extrato* e cole na planilha.",
+      "personagem": "trix-dica",
+      "narracao": "Um atalho: no extrato do banco, copie as colunas e cole aqui. Depois é só ajustar o grupo de cada linha.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 4,
+      "total": 6
+    },
+    {
+      "tipo": "topicos",
+      "titulo": "O *Resumo* mostra",
+      "itens": [
+        "Quanto entrou e quanto saiu",
+        "Saldo do mês",
+        "Peso de cada grupo na renda"
+      ],
+      "personagem": "trix-apresenta",
+      "narracao": "Na aba Resumo você vê quanto entrou, quanto saiu, o saldo e quanto cada grupo pesa na renda. Se o saldo ficou negativo, tudo bem. O objetivo agora é enxergar.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 5,
+      "total": 6
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Próxima aula: onde o dinheiro *vaza*",
+      "texto": "As três categorias que mais escapam.",
+      "botao": "Ir para a aula 3",
+      "narracao": "Na próxima aula, as três categorias que mais vazam dinheiro.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 6,
+      "total": 6
+    }
+  ]
+}

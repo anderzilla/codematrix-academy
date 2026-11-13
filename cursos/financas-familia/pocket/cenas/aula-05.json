@@ -1,0 +1,44 @@
+{
+  "titulo": "Próximo passo: o plano completo da família",
+  "tema": "pessoal",
+  "cenas": [
+    {
+      "tipo": "capa",
+      "eyebrow": "Pocket · Aula 5",
+      "titulo": "Do mapa ao *plano* da família",
+      "subtitulo": "Você já sabe para onde vai o dinheiro. Agora vem o plano.",
+      "narracao": "Você já sabe para onde vai o dinheiro e já tem três cortes. Isso é o mapa. Agora vem o plano.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 1,
+      "total": 3
+    },
+    {
+      "tipo": "topicos",
+      "titulo": "O que vem no *plano completo*",
+      "itens": [
+        "Calendário de contas do ano",
+        "Reserva de emergência",
+        "Plano de saída das dívidas",
+        "Metas e aposentadoria"
+      ],
+      "personagem": "trix-apresenta",
+      "narracao": "O plano completo tem o calendário de contas do ano, a reserva de emergência, um plano para sair das dívidas, as metas da família e o primeiro plano de aposentadoria.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 2,
+      "total": 3
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Organize as *finanças da família*",
+      "texto": "Planilha completa, um módulo novo a cada 2 dias e certificado. O valor do Pocket vira crédito.",
+      "botao": "Ver o curso completo",
+      "narracao": "Tudo isso está no curso Organize as finanças da família em planilhas. Como você já é aluno, o valor do Pocket entra como crédito. O link está abaixo desta aula. Parabéns por chegar até aqui!",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 3,
+      "total": 3
+    }
+  ]
+}

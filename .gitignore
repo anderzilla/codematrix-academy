@@ -7,3 +7,15 @@ data/*.db-*
 saidas/*
 !saidas/.gitkeep
 logs/
+# intermediários de render (o rex limpa, mas por garantia)
+**/videos/*/quadros/
+**/videos/*/audio/
+**/videos/*/cenas/
+**/videos/*/legendas/
+**/videos/*/narracao.wav
+**/horizontal/
+**/vertical/
+!exemplos/aula-demo/horizontal/
+!exemplos/aula-demo/vertical/
+# planilhas temporárias do Excel
+~$*.xlsx

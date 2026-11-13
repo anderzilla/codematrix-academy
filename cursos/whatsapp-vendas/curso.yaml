@@ -1,0 +1,38 @@
+id: whatsapp-vendas
+tema: marketing
+pocket:
+  titulo: "Pack de 30 mensagens prontas para vender no WhatsApp"
+  subtitulo: "Primeiro contato, follow-up, cobrança educada, pós-venda e reativação — copie, adapte e use hoje."
+  preco_proposto: 27
+  entregavel: "30 mensagens adaptadas ao seu negócio e organizadas em respostas rápidas"
+  aulas:
+    - {n: 1, titulo: "Por que a venda morre no WhatsApp", minutos: 6, personagem: trix-ola}
+    - {n: 2, titulo: "Como adaptar as 30 mensagens ao seu negócio", minutos: 8, personagem: trix-explica}
+    - {n: 3, titulo: "Respostas rápidas configuradas em 10 minutos", minutos: 7, personagem: trix-estuda}
+    - {n: 4, titulo: "Erros que fazem o cliente sumir", minutos: 6, personagem: trix-alerta}
+    - {n: 5, titulo: "Próximo passo: rotina de vendas completa", minutos: 4, personagem: trix-apresenta}
+  quiz: 5 perguntas
+  materiais: [30-mensagens.pdf]
+  bump: {titulo: "Pack de mensagens para datas comemorativas", preco_proposto: 17}
+completo:
+  titulo: "Aumente suas vendas usando o WhatsApp"
+  subtitulo: "Catálogo, respostas rápidas, etiquetas, follow-up e mensagens automáticas para nenhum cliente ficar sem resposta."
+  preco_proposto: 197
+  entregaveis: [perfil comercial configurado, catálogo, funil de etiquetas, rotina diária de follow-up, mensagens automáticas]
+  modulos:
+    - {n: 1, titulo: "Perfil e catálogo que vendem", liberacao_dias: 0, aulas: ["Perfil comercial", "Catálogo com fotos e preços", "Link curto e QR code"], quiz: true}
+    - {n: 2, titulo: "Atendimento rápido", liberacao_dias: 0, aulas: ["Respostas rápidas", "Mensagem de ausência e saudação", "Roteiro de atendimento"], quiz: true}
+    - {n: 3, titulo: "Etiquetas e funil", liberacao_dias: 2, aulas: ["Etiquetas por etapa", "Lista de transmissão com consentimento", "Status que vende"], quiz: true}
+    - {n: 4, titulo: "Follow-up e recuperação", liberacao_dias: 4, aulas: ["Rotina de 20 min por dia", "Orçamento sem resposta", "Pós-venda e indicação"], quiz: true}
+    - {n: 5, titulo: "Automação responsável", liberacao_dias: 6, aulas: ["O que automatizar e o que não", "Ferramentas e regras de uso", "Certificado e próximos passos"], material_final: apostila-whatsapp-vendas.pdf}
+  materiais: [planilha-follow-up.xlsx]
+  bump: {titulo: "Modelos de catálogo e status para 10 segmentos", preco_proposto: 37}
+  bonus: ["Roteiro de atendimento por segmento"]
+marketing:
+  angulo: "30 mensagens prontas para responder, cobrar e vender."
+  publico: "Donos de pequenos negócios e autônomos que vendem pelo WhatsApp; antes do Natal"
+  ganchos:
+    - "O cliente pediu orçamento e sumiu? Usa essa mensagem."
+    - "3 mensagens que eu mandaria hoje se vendesse pelo WhatsApp."
+    - "Etiquetas: o recurso do WhatsApp Business que quase ninguém usa direito."
+  cuidados: ["Sem logo do WhatsApp; nome só descritivo", "Lista de transmissão só com consentimento (LGPD)", "Respeitar as políticas de uso do WhatsApp"]

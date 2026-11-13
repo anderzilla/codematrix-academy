@@ -1,0 +1,40 @@
+id: financas-familia
+tema: pessoal
+pocket:
+  titulo: "Descubra para onde vai o seu dinheiro em 1 hora"
+  subtitulo: "Registre um mês de gastos, veja as categorias que pesam e encontre os primeiros cortes — com planilha pronta."
+  preco_proposto: 27
+  entregavel: "Planilha Pocket preenchida com o mês atual e 3 cortes definidos"
+  aulas:
+    - {n: 1, titulo: "O mapa do dinheiro: entradas, fixos e variáveis", minutos: 7, personagem: trix-ola}
+    - {n: 2, titulo: "Preencha a planilha em 15 minutos", minutos: 9, personagem: trix-explica}
+    - {n: 3, titulo: "As 3 categorias que mais vazam", minutos: 7, personagem: trix-alerta}
+    - {n: 4, titulo: "Seus 3 primeiros cortes sem sofrimento", minutos: 6, personagem: trix-dica}
+    - {n: 5, titulo: "Próximo passo: o plano completo da família", minutos: 4, personagem: trix-apresenta}
+  quiz: 5 perguntas no fim
+  materiais: [planilha-pocket.xlsx]
+  bump: {titulo: "Calendário de contas do ano (IPVA, IPTU, matrícula, seguros)", preco_proposto: 17}
+completo:
+  titulo: "Organize as finanças da família em planilhas"
+  subtitulo: "Contas a pagar, reserva de emergência, metas, dívidas e plano de aposentadoria em uma planilha que todos entendem."
+  preco_proposto: 197
+  entregaveis: [planilha completa, plano de quitação de dívidas, meta de reserva, plano de metas da família, simulação de aposentadoria]
+  modulos:
+    - {n: 1, titulo: "Comece pelo mapa", liberacao_dias: 0, aulas: ["Boas-vindas e como usar a planilha", "Entradas e gastos do mês", "Categorias que fazem sentido para sua família"], quiz: true}
+    - {n: 2, titulo: "Contas a pagar sem susto", liberacao_dias: 0, aulas: ["Calendário de vencimentos", "Contas anuais divididas por 12", "Alertas de vencimento na planilha"], quiz: true}
+    - {n: 3, titulo: "Reserva de emergência", liberacao_dias: 2, aulas: ["Quanto é a sua reserva", "Onde guardar (conceitos, sem recomendação de produto)", "Aporte automático"], quiz: true}
+    - {n: 4, titulo: "Dívidas: plano de saída", liberacao_dias: 4, aulas: ["Liste e entenda os juros", "Bola de neve x avalanche", "Negociação: roteiro de conversa"], quiz: true}
+    - {n: 5, titulo: "Metas da família", liberacao_dias: 6, aulas: ["Metas com valor e data", "Quanto guardar por mês", "Reunião financeira da família em 20 min"], quiz: true}
+    - {n: 6, titulo: "Aposentadoria: o primeiro plano", liberacao_dias: 8, aulas: ["Quanto você precisaria", "O efeito do tempo (juros compostos)", "Revisão anual"], quiz: true}
+    - {n: 7, titulo: "Conclusão e apostila completa", liberacao_dias: 10, aulas: ["Sua rotina de 15 min por semana", "Certificado e próximos passos"], material_final: apostila-financas-familia.pdf}
+  materiais: [planilha-completa.xlsx]
+  bump: {titulo: "Kit de modelos: lista de compras, orçamento de festas e férias", preco_proposto: 37}
+  bonus: ["Roteiro de negociação de dívidas", "Planner da reunião financeira da família"]
+marketing:
+  angulo: "Em 1 hora você sabe para onde foi cada real do mês."
+  publico: "Casais e famílias com renda que some antes do fim do mês; foco em janeiro (IPVA, IPTU, material escolar)"
+  ganchos:
+    - "Seu salário some antes do dia 20? Faz esse teste de 15 minutos."
+    - "IPVA, IPTU e material escolar: monte o calendário antes de janeiro."
+    - "A planilha que acabou com a briga sobre dinheiro em casa."
+  cuidados: ["Sem recomendar investimento específico (RC-002)", "Anúncio sem atributo pessoal ('você que está endividado')"]

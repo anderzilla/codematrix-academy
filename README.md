@@ -23,7 +23,7 @@ usando IA local (Ollama) sempre que possível e IA paga só onde ela faz diferen
   o curso completo é produzido. Se não, a oferta é ajustada uma vez ou arquivada.
 * **Toda segunda:** análise semanal: o que vendeu, onde estamos errando, para onde levar o esforço.
 
-Fluxo completo por etapa e por dia: **`FLUXO.md`**. Instruções para qualquer IA: **`AGENTS.md`**.
+Fluxo completo por etapa e por dia: **`FLUXO.md`**. Roteiro de lançamento: **`planos/ROTEIRO-2026-11-16.md`** · Segunda: **`planos/SEGUNDA-16.md`**. Instruções para qualquer IA: **`AGENTS.md`**.
 
 ## O que tem aqui
 
@@ -42,7 +42,11 @@ Fluxo completo por etapa e por dia: **`FLUXO.md`**. Instruções para qualquer I
 | `mcp_server/` | Servidor MCP para Claude Desktop/Code |
 | `scripts/` | Instalação, agendamento, servidor Ollama |
 | `exemplos/aula-demo/` | Vídeo de demonstração 16:9 e 9:16 com legenda (narração simulada) |
-| `saidas/` | Tudo o que a fábrica gera |
+| `cursos/` | **Cada curso em sua pasta versionada**: curso.yaml, roteiros, cenas, vídeos (LFS), materiais, quizzes, páginas, marketing, retenção, Kiwify |
+| `modelos/` | Modelos de retenção, avaliação, remarketing, calendário, página de obrigado, links da Kiwify |
+| `planos/` | Roteiros, planos e prompts (ex.: `planos/prompts/site-academy.md`) |
+| `scripts/planilhas/` | Geradores das planilhas dos cursos |
+| `saidas/` | Rascunhos descartáveis (fora do git) |
 
 ## Passo a passo (Windows, PowerShell)
 
@@ -94,6 +98,16 @@ Fluxo completo por etapa e por dia: **`FLUXO.md`**. Instruções para qualquer I
 | `rex regra listar|nova|aprovar|revogar|indice` | Regras de negócio e de cursos |
 | `rex marca capa ...` / `rex marca extrair <imagens> --aplicar` | Capas/thumbnails e cores oficiais |
 | `rex video status|cenas|previa|render` | Vídeo com narração e legenda (16:9 e `--vertical`) |
+| `rex sprint listar|hoje|iniciar <curso>|kiwify <curso>` | Calendário e checklist do sprint de 2 dias; cria a estrutura do curso |
+| `rex salvar -m "mensagem"` | Confere segredos, dados de alunos e arquivos grandes e envia tudo ao git (vídeos via LFS) |
+
+## Onde cada coisa é salva
+
+Tudo o que pertence a um curso fica em `cursos/<id>/` e vai para o git com `rex salvar`:
+roteiros e cenas (texto), vídeos e áudios (Git LFS — rode `git lfs install` uma vez), planilhas, PDFs e capas (git normal).
+A pasta local é o próprio repositório: clone em `G:\Renda Extra\Ferramentas` e trabalhe nela.
+Nunca vão para o git: credenciais (cofre), banco local, dados de compradores. O `rex salvar` bloqueia se encontrar algum.
+A cota de Git LFS do GitHub é limitada; confira o uso em Settings → Billing antes de subir muitos vídeos.
 
 ## Como economiza tokens
 

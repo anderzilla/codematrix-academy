@@ -1,0 +1,89 @@
+{
+  "titulo": "O mapa do dinheiro",
+  "tema": "pessoal",
+  "cenas": [
+    {
+      "tipo": "capa",
+      "eyebrow": "Pocket · Aula 1",
+      "titulo": "O *mapa* do dinheiro",
+      "subtitulo": "Entradas, fixos e variáveis: o primeiro passo para saber para onde vai cada real.",
+      "narracao": "Oi! Nesta aula você monta o mapa do dinheiro da sua casa. Somando as próximas aulas, em uma hora você vai saber para onde foi cada real do mês.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 1,
+      "total": 6
+    },
+    {
+      "tipo": "destaque",
+      "texto": "O dinheiro não some. Ele vai para lugares que a gente *não anota*.",
+      "narracao": "O dinheiro não some. Ele vai para lugares que a gente não anota: o cafezinho, o aplicativo de entrega, a assinatura que ninguém usa.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 2,
+      "total": 6
+    },
+    {
+      "tipo": "topicos",
+      "titulo": "Todo gasto cai em *3 grupos*",
+      "itens": [
+        "Fixos: aluguel, escola, internet",
+        "Essenciais variáveis: mercado, luz",
+        "Livres: delivery, roupas, lazer"
+      ],
+      "personagem": "trix-explica",
+      "narracao": "Todo gasto cai em um de três grupos. Fixos, com valor quase igual todo mês. Variáveis essenciais, que mudam de valor mas não dá para cortar. E os livres, que dependem só da sua escolha.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 3,
+      "total": 6
+    },
+    {
+      "tipo": "comparacao",
+      "titulo": "Família do exemplo: *R$ 6.000* por mês",
+      "esquerda": {
+        "titulo": "Para onde foi",
+        "itens": [
+          "Fixos: R$ 3.100",
+          "Essenciais: R$ 1.900",
+          "Livres: R$ 1.400"
+        ]
+      },
+      "direita": {
+        "titulo": "O que isso mostra",
+        "itens": [
+          "Total: R$ 6.400",
+          "Faltaram R$ 400",
+          "Ajuste começa nos livres"
+        ]
+      },
+      "narracao": "Na família do exemplo entram seis mil reais. Fixos somam três mil e cem, essenciais mil e novecentos e livres mil e quatrocentos. O total passa da renda. É aí que mora o aperto, e o ajuste mais rápido começa pelos gastos livres.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 4,
+      "total": 6
+    },
+    {
+      "tipo": "passo",
+      "numero": 1,
+      "titulo": "Marque *F, E ou L*",
+      "texto": "Pegue o extrato do último mês e marque cada gasto. Não precisa ser perfeito.",
+      "personagem": "trix-estuda",
+      "narracao": "Exercício: pegue o extrato do último mês e marque cada gasto com F, E ou L. Não precisa ser perfeito.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 5,
+      "total": 6
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Próxima aula: a *planilha* em 15 minutos",
+      "texto": "Você vai colocar tudo isso na planilha e ver o resumo do mês.",
+      "botao": "Ir para a aula 2",
+      "narracao": "Na próxima aula, você coloca tudo isso na planilha em quinze minutos.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 6,
+      "total": 6
+    }
+  ]
+}

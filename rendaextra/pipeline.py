@@ -97,11 +97,20 @@ def _resumo_concorrentes(tema: str) -> str:
 def revisar_pasta(pasta: Path, tema: str) -> compliance.Resultado:
     refs = _referencias(tema)
     res = compliance.Resultado()
-    for arq in sorted(pasta.glob("*.md")) + sorted(pasta.glob("*.html")):
-        if arq.name in ("revisao.md", "checklist_publicacao.md", "RESUMO.md"):
-            continue
-        compliance.revisar_texto(arq.read_text(encoding="utf-8"), arq.name, refs, res)
-    (pasta / "revisao.md").write_text(res.markdown(), encoding="utf-8")
+    curso = (pasta / "curso.yaml").exists()
+    if curso:  # curso inteiro: páginas, roteiros, cenas, marketing e retenção
+        arquivos = [p for p in sorted(pasta.rglob("*")) if p.suffix in (".md", ".json", ".yaml")
+                    and p.name not in ("LEIA-ME.md", "SPRINT.md", "montagem.md", "revisao.md", "RESUMO.md", "links.yaml")
+                    and "pareceres" not in p.parts]
+        destino = pasta / "pareceres" / "revisao.md"
+        destino.parent.mkdir(exist_ok=True)
+    else:
+        arquivos = [a for a in sorted(pasta.glob("*.md")) + sorted(pasta.glob("*.html"))
+                    if a.name not in ("revisao.md", "checklist_publicacao.md", "RESUMO.md")]
+        destino = pasta / "revisao.md"
+    for arq in arquivos:
+        compliance.revisar_texto(arq.read_text(encoding="utf-8"), str(arq.relative_to(pasta)), refs, res)
+    destino.write_text(res.markdown(), encoding="utf-8")
     return res
 
 

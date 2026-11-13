@@ -1,0 +1,64 @@
+{
+  "titulo": "As 3 categorias que mais vazam",
+  "tema": "pessoal",
+  "cenas": [
+    {
+      "tipo": "capa",
+      "eyebrow": "Pocket · Aula 3",
+      "titulo": "As 3 categorias que mais *vazam*",
+      "subtitulo": "O vazamento está no pequeno que se repete.",
+      "narracao": "Cuidado: o vazamento quase nunca está no gasto grande. Está no gasto pequeno que se repete.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 1,
+      "total": 5
+    },
+    {
+      "tipo": "topicos",
+      "titulo": "Os *suspeitos* de sempre",
+      "itens": [
+        "Delivery e mercado picado",
+        "Assinaturas esquecidas",
+        "Tarifas e juros"
+      ],
+      "personagem": "trix-alerta",
+      "narracao": "Os suspeitos de sempre: delivery e compras pequenas de mercado, assinaturas esquecidas, e tarifas e juros do banco.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 2,
+      "total": 5
+    },
+    {
+      "tipo": "destaque",
+      "texto": "10 pedidos de R$ 45 = *R$ 450* no mês.",
+      "narracao": "Dez pedidos de quarenta e cinco reais viram quatrocentos e cinquenta reais no mês. Sem perceber.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 3,
+      "total": 5
+    },
+    {
+      "tipo": "passo",
+      "numero": 1,
+      "titulo": "Ordene os *gastos livres*",
+      "texto": "Do maior para o menor. As 3 primeiras linhas são o seu alvo.",
+      "personagem": "trix-estuda",
+      "narracao": "Na planilha, ordene os gastos livres do maior para o menor. As três primeiras linhas são o seu alvo.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 4,
+      "total": 5
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Próxima aula: 3 cortes que *não doem*",
+      "texto": "Pequenos, com valor e com data.",
+      "botao": "Ir para a aula 4",
+      "narracao": "Na próxima aula você define três cortes que não doem.",
+      "tema": "pessoal",
+      "rotulo": "Pocket · Finanças da família",
+      "indice": 5,
+      "total": 5
+    }
+  ]
+}
