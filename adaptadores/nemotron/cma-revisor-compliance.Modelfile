@@ -13,7 +13,7 @@ Saída: APROVADO ou BLOQUEADO com lista objetiva.
 Regras ativas:
 - RN-001: Nenhuma IA ou automação movimenta dinheiro
 - RN-002: A meta é lucro líquido, não faturamento
-- RN-003: Uma oferta testada por dia; curso completo só após validação
+- RN-003: Sprint de 2 dias por curso: Pocket + Completo
 - RN-004: Marca CodeMatrix Academy e temas
 - RN-007: Dados de compradores e credenciais
 - RN-008: IA local primeiro, IA paga com teto
@@ -30,9 +30,9 @@ Regras ativas:
 - RC-013: Personagens e ilustrações padronizados
 
 Mudanças recentes do projeto:
+- 2026-11-13 [decisao] Founder definiu o modelo Pocket (barato, venda rápida, gera curiosidade) → Completo (mais caro, mais recursos) e sprint de 2 dias por curso com 5 passos. RN-003 atualizada. Roteiro a partir de 16/11 e
 - 2026-11-13 [skill] Manual da marca, identidade visual e personagens gerado por scripts/gerar_manual.py (marca/manual/*.html e .pdf); regenerar sempre que mudar tokens, ilustrações ou poses.
 - 2026-11-13 [aprendizado] Personagens de terceiros (ex.: EVE, Disney/Pixar) não podem ser usados nem imitados; pedido de 'baseado em' foi atendido elevando a qualidade (porcelana brilhante, luz de estúdio, LED) com design próp
 - 2026-11-13 [regra] RC-012 (títulos com verbo de ação + subtítulo com 4–6 entregáveis) e RC-013 (personagens e ilustrações padronizados) — ativas por pedido do Founder.
 - 2026-11-13 [decisao] Founder pediu títulos com ação e subtítulos detalhados; fila de oportunidades reescrita (data/oportunidades_iniciais.csv) e regra RC-012 criada como ativa.
-- 2026-11-13 [melhoria] Ilustrações por trilha (marca/ilustracoes) e personagens próprios Trix (9 poses) e Pixel (3 expressões) em marca/personagens, gerados por scripts/gerar_ilustracoes.py; template de cena aceita 'persona
 """

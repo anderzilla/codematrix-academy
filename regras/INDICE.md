@@ -6,7 +6,7 @@
 |---|---|---|---|
 | [RN-001](negocio/RN-001.md) | ativa | Nenhuma IA ou automação movimenta dinheiro | código (integrações somente leitura) + revisor-compliance |
 | [RN-002](negocio/RN-002.md) | ativa | A meta é lucro líquido, não faturamento | rex analise |
-| [RN-003](negocio/RN-003.md) | ativa | Uma oferta testada por dia; curso completo só após validação | rex decidir |
+| [RN-003](negocio/RN-003.md) | ativa | Sprint de 2 dias por curso: Pocket + Completo | rex decidir + planos/ROTEIRO-2026-11-16.md |
 | [RN-004](negocio/RN-004.md) | ativa | Marca CodeMatrix Academy e temas | especialista-marketing-de-imagem |
 | [RN-005](negocio/RN-005.md) | proposta | Low ticket é porta de entrada | economista-de-vendas |
 | [RN-006](negocio/RN-006.md) | proposta | Anúncio pago só com teto aprovado e regra de parada | gestor-de-trafego + analista-de-metricas |

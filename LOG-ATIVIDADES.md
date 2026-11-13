@@ -11,6 +11,11 @@ Comando: `rex log add --modelo <modelo> --agente <id> --tipo <tipo> --texto "...
 
 <!-- ENTRADAS: novas entradas são inseridas logo abaixo desta linha -->
 
+### 2026-11-13 13:32 · decisao · claude-opus-5-5 · estrategista-oferta
+Founder definiu o modelo Pocket (barato, venda rápida, gera curiosidade) → Completo (mais caro, mais recursos) e sprint de 2 dias por curso com 5 passos. RN-003 atualizada. Roteiro a partir de 16/11 em planos/ROTEIRO-2026-11-16.md (ordem: Finanças, Produto digital, WhatsApp, App com IA; Black Friday 27–30/11).
+Arquivos: planos/ROTEIRO-2026-11-16.md, regras/negocio/RN-003.md
+
+
 ### 2026-11-13 13:16 · skill · claude-opus-5-5 · especialista-marketing-de-imagem
 Manual da marca, identidade visual e personagens gerado por scripts/gerar_manual.py (marca/manual/*.html e .pdf); regenerar sempre que mudar tokens, ilustrações ou poses.
 
