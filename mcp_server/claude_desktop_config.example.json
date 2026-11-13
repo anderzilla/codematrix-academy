@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "rendaextra": {
+      "command": "G:\\Renda Extra\\Ferramentas\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "mcp_server.server"],
+      "env": { "REX_ROOT": "G:\\Renda Extra\\Ferramentas" }
+    }
+  }
+}

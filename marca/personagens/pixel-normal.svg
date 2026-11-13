@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-70 -70 140 150" width="100%" height="100%"><defs>
+  <linearGradient id="vidro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity=".55"/></linearGradient>
+  <linearGradient id="vidroAz" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#E6ECFF"/></linearGradient>
+  <linearGradient id="tema" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--acento,#1F5EFF)"/><stop offset="1" style="stop-color:var(--tintaTema,#1846D1)"/></linearGradient>
+  <linearGradient id="temaSec" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--sec,#22D3EE)"/><stop offset="1" style="stop-color:var(--acento,#1F5EFF)"/></linearGradient>
+  <filter id="sombra" x="-60%" y="-60%" width="220%" height="240%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#0B1530" flood-opacity=".18"/></filter>
+  <filter id="brilho" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+  <radialGradient id="porc" cx=".34" cy=".26" r=".85"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#F5F7FC"/><stop offset=".8" stop-color="#E1E8F4"/><stop offset="1" stop-color="#C7D2E6"/></radialGradient>
+  <linearGradient id="porcLin" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#D3DCEC"/><stop offset=".35" stop-color="#FFFFFF"/><stop offset="1" stop-color="#CBD5E8"/></linearGradient>
+  <linearGradient id="visor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#24304F"/><stop offset=".55" stop-color="#0B1222"/><stop offset="1" stop-color="#03060D"/></linearGradient>
+  <radialGradient id="joia" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".35" style="stop-color:var(--acento,#1F5EFF)"/><stop offset="1" style="stop-color:var(--tintaTema,#1846D1)"/></radialGradient>
+  <linearGradient id="sola" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A3556"/><stop offset="1" stop-color="#070B16"/></linearGradient>
+  <filter id="led" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="macio" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter>
+  <filter id="macio2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.5"/></filter>
+</defs><g transform="translate(0 0) scale(1)">
+  <ellipse cx="0" cy="70" rx="30" ry="6" fill="#0B1530" opacity=".08"/>
+  <path d="M-28 -36 Q0 -54 28 -36" fill="none" style="stroke:var(--acento,#1F5EFF)" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+  <circle r="42" fill="url(#porc)"/><circle r="42" fill="none" stroke="#fff" stroke-width="2"/>
+  <rect x="-29" y="-21" width="58" height="40" rx="19" fill="url(#visor)"/><g filter="url(#led)"><rect x="-17.2" y="-9.8" width="5.5" height="5.5" rx="2" style="fill:var(--sec,#22D3EE)" opacity="1"/><rect x="-10.2" y="-9.8" width="5.5" height="5.5" rx="2" style="fill:var(--sec,#22D3EE)" opacity="1"/><rect x="-17.2" y="-2.8" width="5.5" height="5.5" rx="2" style="fill:var(--sec,#22D3EE)" opacity="1"/><rect x="-10.2" y="-2.8" width="5.5" height="5.5" rx="2" style="fill:var(--sec,#22D3EE)" opacity="1"/><rect x="-17.2" y="4.2" width="5.5" height="5.5" rx="2" style="fill:var(--sec,#22D3EE)" opacity="1"/><rect x="-10.2" y="4.2" width="5.5" height="5.5" rx="2" style="fill:var(--sec,#22D3EE)" opacity="1"/><rect x="4.8" y="-9.8" width="5.5" height="5.5" rx="2" style="fill:var(--sec,#22D3EE)" opacity="1"/><rect x="11.8" y="-9.8" width="5.5" height="5.5" rx="2" style="fill:var(--sec,#22D3EE)" opacity="1"/><rect x="4.8" y="-2.8" width="5.5" height="5.5" rx="2" style="fill:var(--sec,#22D3EE)" opacity="1"/><rect x="11.8" y="-2.8" width="5.5" height="5.5" rx="2" style="fill:var(--sec,#22D3EE)" opacity="1"/><rect x="4.8" y="4.2" width="5.5" height="5.5" rx="2" style="fill:var(--sec,#22D3EE)" opacity="1"/><rect x="11.8" y="4.2" width="5.5" height="5.5" rx="2" style="fill:var(--sec,#22D3EE)" opacity="1"/></g>
+  <ellipse cx="-16" cy="-29" rx="12" ry="5" fill="#fff" opacity=".95" filter="url(#macio2)"/>
+  <rect x="-6" y="34" width="12" height="6" rx="3" fill="url(#joia)"/>
+</g></svg>

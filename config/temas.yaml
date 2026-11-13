@@ -1,0 +1,44 @@
+# Temas escolhidos em 13/11/2026 e o "assunto mais vendido" de cada um, segundo as vitrines públicas
+# (levantamento de maio–jul/2026 e Hotmart Insights). São HIPÓTESES até a coleta de concorrentes confirmar.
+# Ordem = prioridade de teste.
+
+temas:
+  - id: ia
+    nome: "IA e tecnologia"
+    assunto_lider: "IA aplicada ao trabalho / criar com IA"
+    subtemas:
+      - "Apps e automações com IA sem saber programar (vibe coding)"
+      - "ChatGPT/Claude/Gemini para o trabalho do dia a dia"
+      - "Agentes de IA para pequenos negócios"
+    vantagem_injusta: "15+ anos de dev, app publicado nas lojas com IA, pós em IA aplicada"
+    risco_politica: baixo
+
+  - id: marketing
+    nome: "Marketing digital e vendas"
+    assunto_lider: "Vender pelo WhatsApp / tráfego pago para iniciantes"
+    subtemas:
+      - "Vendas e atendimento no WhatsApp com automação"
+      - "Primeiras campanhas no Meta Ads"
+      - "Instagram para negócio local"
+    vantagem_injusta: "formação em design, produção de vídeo, automação"
+    risco_politica: medio
+
+  - id: renda
+    nome: "Renda extra / negócios online"
+    assunto_lider: "Começar como afiliado / vender produto digital"
+    subtemas:
+      - "Primeiro produto digital com IA"
+      - "Afiliado para iniciantes"
+      - "Serviços freelancer com IA"
+    vantagem_injusta: "opera a própria fábrica de ofertas — documentar o processo real"
+    risco_politica: alto            # Meta reprova promessa de ganho; copy precisa falar de habilidade, não de dinheiro
+
+  - id: pessoal
+    nome: "Desenvolvimento pessoal e finanças pessoais"
+    assunto_lider: "Organização financeira / sair das dívidas; produtividade"
+    subtemas:
+      - "Planilha e método para organizar as finanças da família"
+      - "Produtividade com IA para quem trabalha e estuda"
+      - "Rotina e foco"
+    vantagem_injusta: "ferramentas e automação aplicadas à rotina"
+    risco_politica: medio           # nada de recomendação de investimento específico (CVM)

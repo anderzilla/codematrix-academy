@@ -1,0 +1,89 @@
+{
+  "titulo": "Seu primeiro app com IA",
+  "tema": "ia",
+  "cenas": [
+    {
+      "tipo": "capa",
+      "eyebrow": "Módulo 1 · Aula 1",
+      "titulo": "Seu primeiro app com *IA*",
+      "subtitulo": "Do zero à loja, com a IA como copiloto em cada etapa.",
+      "narracao": "Bem-vindo à primeira aula. Hoje você sai do zero e termina com a primeira tela do seu aplicativo rodando no celular.",
+      "tema": "ia",
+      "rotulo": "Seu primeiro app com IA",
+      "indice": 1,
+      "total": 6
+    },
+    {
+      "tipo": "topicos",
+      "titulo": "O que você vai *construir* hoje",
+      "itens": [
+        "Ideia validada em uma frase",
+        "Tela inicial gerada com IA",
+        "Primeiro teste no seu celular",
+        "Lista do que falta para publicar"
+      ],
+      "narracao": "São quatro entregas: a ideia em uma frase, a tela inicial gerada com IA, o primeiro teste no seu celular e a lista do que falta para publicar.",
+      "tema": "ia",
+      "rotulo": "Seu primeiro app com IA",
+      "indice": 2,
+      "total": 6
+    },
+    {
+      "tipo": "passo",
+      "numero": 1,
+      "titulo": "Descreva o app em *uma frase*",
+      "texto": "Para quem é, qual problema resolve e qual é a primeira tela.",
+      "narracao": "Primeiro passo: descreva o aplicativo em uma frase. Para quem ele é, qual problema resolve e o que aparece na primeira tela.",
+      "tema": "ia",
+      "rotulo": "Seu primeiro app com IA",
+      "indice": 3,
+      "total": 6
+    },
+    {
+      "tipo": "codigo",
+      "titulo": "Crie o projeto e peça a *tela inicial*",
+      "codigo": "npx create-expo-app meu-app\ncd meu-app\nnpx expo start\n\n# prompt para a IA:\n# \"Crie a tela inicial com uma lista de tarefas\"",
+      "narracao": "Agora crie o projeto com três comandos e peça para a IA escrever a tela inicial. Você revisa o código antes de aceitar.",
+      "tema": "ia",
+      "rotulo": "Seu primeiro app com IA",
+      "indice": 4,
+      "total": 6
+    },
+    {
+      "tipo": "comparacao",
+      "titulo": "IA como *copiloto*, não piloto",
+      "esquerda": {
+        "titulo": "Pedir tudo de uma vez",
+        "itens": [
+          "Código difícil de entender",
+          "Erros escondidos",
+          "Você não aprende"
+        ]
+      },
+      "direita": {
+        "titulo": "Pedir em passos",
+        "itens": [
+          "Uma tela por vez",
+          "Você revisa cada parte",
+          "Erro fica fácil de achar"
+        ]
+      },
+      "narracao": "Um cuidado importante: não peça o aplicativo inteiro de uma vez. Peça uma tela por vez e revise cada parte. Assim o erro fica fácil de achar.",
+      "tema": "ia",
+      "rotulo": "Seu primeiro app com IA",
+      "indice": 5,
+      "total": 6
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Sua vez: *rode no celular*",
+      "texto": "Abra o Expo Go, escaneie o QR code e mande um print no grupo.",
+      "botao": "Próxima aula: navegação",
+      "narracao": "Sua vez. Abra o Expo Go, escaneie o QR code e veja seu app rodando. Na próxima aula, a gente cria a navegação entre telas.",
+      "tema": "ia",
+      "rotulo": "Seu primeiro app com IA",
+      "indice": 6,
+      "total": 6
+    }
+  ]
+}

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>CodeMatrix Academy — cena</title>
+<style>
+@font-face{font-family:"Inter";src:url("../fontes/Inter-Regular.otf");font-weight:400}
+@font-face{font-family:"Inter";src:url("../fontes/Inter-Medium.otf");font-weight:500}
+@font-face{font-family:"Inter";src:url("../fontes/Inter-SemiBold.otf");font-weight:600}
+@font-face{font-family:"Inter";src:url("../fontes/Inter-Bold.otf");font-weight:700}
+@font-face{font-family:"Inter Display";src:url("../fontes/InterDisplay-SemiBold.otf");font-weight:600}
+@font-face{font-family:"Inter Display";src:url("../fontes/InterDisplay-Bold.otf");font-weight:700}
+@font-face{font-family:"Inter Display";src:url("../fontes/InterDisplay-ExtraBold.otf");font-weight:800}
+@font-face{font-family:"JetBrains Mono";src:url("../fontes/JetBrainsMono-Regular.ttf");font-weight:400}
+@font-face{font-family:"JetBrains Mono";src:url("../fontes/JetBrainsMono-Bold.ttf");font-weight:700}
+
+:root{
+  --w:1920px; --h:1080px; --u:1px;            /* --u = unidade de escala (1px em 1920) */
+  --acento:#1F5EFF; --sec:#22D3EE; --tintaTema:#1846D1; --marca:#1F5EFF;
+  --ink:#0B1530; --texto:#0F172A; --suave:#475569; --fundo:#F3F6FF;
+  --raio:40px; --blur:28px; --sat:1.6;
+  --safe-bottom:250px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:var(--w);height:var(--h);overflow:hidden;background:var(--fundo)}
+body{font-family:"Inter",system-ui,sans-serif;color:var(--texto);-webkit-font-smoothing:antialiased}
+
+/* ---------- fundo liquid glass ---------- */
+.palco{position:relative;width:100%;height:100%;overflow:hidden;
+  background:
+    radial-gradient(120% 90% at 0% 0%, #FFFFFF 0%, rgba(255,255,255,0) 55%),
+    linear-gradient(160deg, #F7F9FF 0%, var(--fundo) 55%, #EAF0FF 100%);}
+.blob{position:absolute;border-radius:50%;filter:blur(calc(90*var(--u)));opacity:.55}
+.b1{width:calc(900*var(--u));height:calc(900*var(--u));background:var(--acento);right:calc(-220*var(--u));top:calc(-320*var(--u));opacity:.38}
+.b2{width:calc(700*var(--u));height:calc(700*var(--u));background:var(--sec);left:calc(-200*var(--u));bottom:calc(-300*var(--u));opacity:.34}
+.b3{width:calc(520*var(--u));height:calc(520*var(--u));background:var(--marca);left:42%;top:58%;opacity:.16}
+.grade{position:absolute;inset:0;opacity:.07;
+  background-image:linear-gradient(var(--ink) 1px,transparent 1px),linear-gradient(90deg,var(--ink) 1px,transparent 1px);
+  background-size:calc(64*var(--u)) calc(64*var(--u));
+  -webkit-mask-image:radial-gradient(70% 60% at 70% 30%,#000 0%,transparent 75%);mask-image:radial-gradient(70% 60% at 70% 30%,#000 0%,transparent 75%)}
+
+/* esferas de vidro líquido */
+.orbe{position:absolute;border-radius:50%;
+  background:
+    radial-gradient(60% 60% at 30% 25%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.35) 28%, rgba(255,255,255,0) 52%),
+    radial-gradient(80% 80% at 70% 80%, color-mix(in srgb,var(--acento) 55%, transparent) 0%, transparent 70%),
+    linear-gradient(140deg, rgba(255,255,255,.55), rgba(255,255,255,.08));
+  box-shadow: inset 0 calc(-18*var(--u)) calc(40*var(--u)) color-mix(in srgb,var(--acento) 35%, transparent),
+              inset 0 calc(10*var(--u)) calc(24*var(--u)) rgba(255,255,255,.9),
+              0 calc(40*var(--u)) calc(80*var(--u)) calc(-30*var(--u)) color-mix(in srgb,var(--acento) 55%, transparent);
+  -webkit-backdrop-filter:blur(calc(10*var(--u))) saturate(1.8);backdrop-filter:blur(calc(10*var(--u))) saturate(1.8)}
+.o1{width:calc(260*var(--u));height:calc(260*var(--u));right:calc(30*var(--u));top:calc(40*var(--u));z-index:4}
+.o2{width:calc(120*var(--u));height:calc(120*var(--u));right:calc(330*var(--u));top:calc(118*var(--u));opacity:.95;z-index:4}
+.o3{width:calc(180*var(--u));height:calc(180*var(--u));left:calc(30*var(--u));bottom:calc(120*var(--u));opacity:.92;z-index:4;
+  background:
+    radial-gradient(60% 60% at 30% 25%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.3) 30%, rgba(255,255,255,0) 52%),
+    radial-gradient(80% 80% at 70% 80%, color-mix(in srgb,var(--sec) 60%, transparent) 0%, transparent 70%),
+    linear-gradient(140deg, rgba(255,255,255,.5), rgba(255,255,255,.06))}
+
+/* ---------- vidro ---------- */
+.vidro{position:relative;border-radius:var(--raio);
+  background:linear-gradient(150deg, rgba(255,255,255,.68) 0%, rgba(255,255,255,.30) 100%);
+  -webkit-backdrop-filter:blur(var(--blur)) saturate(var(--sat));backdrop-filter:blur(var(--blur)) saturate(var(--sat));
+  border:calc(1.5*var(--u)) solid rgba(255,255,255,.8);
+  box-shadow: inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.95), inset 0 calc(-1*var(--u)) 0 rgba(15,23,42,.05),
+              0 calc(40*var(--u)) calc(80*var(--u)) calc(-24*var(--u)) rgba(15,23,42,.28),
+              0 calc(8*var(--u)) calc(24*var(--u)) rgba(15,23,42,.06)}
+.vidro::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg, rgba(255,255,255,.65) 0%, rgba(255,255,255,0) 18%),
+             radial-gradient(60% 40% at 15% 0%, rgba(255,255,255,.55), transparent 70%)}
+
+/* ---------- moldura ---------- */
+.topo{z-index:5;position:absolute;left:calc(80*var(--u));right:calc(80*var(--u));top:calc(56*var(--u));display:flex;align-items:center;justify-content:space-between}
+.wordmark{display:flex;align-items:center;gap:calc(16*var(--u));font-family:"Inter Display";font-weight:700;font-size:calc(34*var(--u));color:var(--ink);letter-spacing:-.01em}
+.wordmark img{height:calc(46*var(--u))}
+.glifo{width:calc(44*var(--u));height:calc(44*var(--u));border-radius:calc(12*var(--u));display:grid;grid-template-columns:repeat(3,1fr);gap:calc(4*var(--u));padding:calc(8*var(--u));
+  background:linear-gradient(140deg,var(--marca),color-mix(in srgb,var(--marca) 60%, #000));box-shadow:inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.45)}
+.glifo i{background:rgba(255,255,255,.9);border-radius:calc(2*var(--u))}
+.glifo i:nth-child(2n){opacity:.45}
+.wordmark .acad{color:var(--tintaTema);font-weight:600}
+.chip{white-space:nowrap;margin-right:calc(240*var(--u));display:inline-flex;align-items:center;gap:calc(12*var(--u));padding:calc(12*var(--u)) calc(24*var(--u));border-radius:999px;font-weight:600;font-size:calc(24*var(--u));color:var(--ink)}
+.chip .ponto{width:calc(14*var(--u));height:calc(14*var(--u));border-radius:50%;background:var(--acento);box-shadow:0 0 0 calc(6*var(--u)) color-mix(in srgb,var(--acento) 22%, transparent)}
+.rodape{position:absolute;left:calc(80*var(--u));right:calc(80*var(--u));bottom:calc(48*var(--u));display:flex;justify-content:space-between;align-items:center;font-size:calc(22*var(--u));color:var(--suave);font-weight:500;z-index:3}
+.prog{display:flex;gap:calc(8*var(--u))}
+.prog b{width:calc(34*var(--u));height:calc(6*var(--u));border-radius:9px;background:rgba(15,23,42,.12)}
+.prog b.on{background:var(--tintaTema)}
+
+/* ---------- conteúdo ---------- */
+.area{position:absolute;left:calc(80*var(--u));right:calc(80*var(--u));top:calc(150*var(--u));bottom:var(--safe-bottom);display:flex;z-index:2}
+.painel>*{position:relative;z-index:1}
+.painel{flex:1;padding:calc(72*var(--u)) calc(84*var(--u));display:flex;flex-direction:column;justify-content:center}
+.eyebrow{font-weight:700;font-size:calc(26*var(--u));letter-spacing:.14em;text-transform:uppercase;color:var(--tintaTema);margin-bottom:calc(24*var(--u))}
+h1{font-family:"Inter Display";font-weight:800;font-size:calc(96*var(--u));line-height:1.03;letter-spacing:-.025em;color:var(--ink)}
+h2{font-family:"Inter Display";font-weight:700;font-size:calc(66*var(--u));line-height:1.08;letter-spacing:-.02em;color:var(--ink);margin-bottom:calc(36*var(--u))}
+.sub{font-size:calc(38*var(--u));line-height:1.4;color:var(--suave);margin-top:calc(28*var(--u));max-width:28em}
+.marca-txt{background:linear-gradient(100deg,var(--tintaTema),color-mix(in srgb,var(--acento) 70%, var(--sec)));-webkit-background-clip:text;background-clip:text;color:transparent}
+.itens{display:grid;gap:calc(22*var(--u))}
+.item{display:flex;align-items:center;gap:calc(28*var(--u));padding:calc(26*var(--u)) calc(32*var(--u));border-radius:calc(28*var(--u));font-size:calc(38*var(--u));font-weight:500;color:var(--texto)}
+.num{flex:none;width:calc(64*var(--u));height:calc(64*var(--u));border-radius:calc(20*var(--u));display:grid;place-items:center;font-family:"Inter Display";font-weight:800;font-size:calc(30*var(--u));color:#fff;
+  background:linear-gradient(140deg,var(--acento),var(--tintaTema));box-shadow:inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.5),0 calc(10*var(--u)) calc(24*var(--u)) calc(-8*var(--u)) var(--acento)}
+.grande-num{font-family:"Inter Display";font-weight:800;font-size:calc(220*var(--u));line-height:.9;letter-spacing:-.05em}
+.codigo{font-family:"JetBrains Mono",monospace;font-size:calc(30*var(--u));line-height:1.55;white-space:pre;color:#E2E8F0;background:linear-gradient(160deg,#0B1530,#16213F);
+  border-radius:calc(28*var(--u));padding:calc(40*var(--u)) calc(48*var(--u));box-shadow:inset 0 calc(1*var(--u)) 0 rgba(255,255,255,.12),0 calc(30*var(--u)) calc(60*var(--u)) calc(-20*var(--u)) rgba(11,21,48,.6);overflow:hidden}
+.codigo .bar{display:flex;gap:calc(10*var(--u));margin-bottom:calc(24*var(--u))}
+.codigo .bar i{width:calc(14*var(--u));height:calc(14*var(--u));border-radius:50%;background:#FF5F57}.codigo .bar i:nth-child(2){background:#FEBC2E}.codigo .bar i:nth-child(3){background:#28C840}
+.destaque{font-family:"Inter Display";font-weight:700;font-size:calc(80*var(--u));line-height:1.12;letter-spacing:-.02em;color:var(--ink)}
+.destaque::before{content:"“";display:block;font-size:calc(180*var(--u));line-height:.6;color:var(--acento);opacity:.7}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:calc(36*var(--u))}
+.col{padding:calc(40*var(--u));border-radius:calc(32*var(--u))}
+.col h3{font-family:"Inter Display";font-size:calc(40*var(--u));margin-bottom:calc(20*var(--u));color:var(--ink)}
+.col.ruim h3{color:var(--suave)}
+.col li{list-style:none;font-size:calc(32*var(--u));padding:calc(10*var(--u)) 0;display:flex;gap:calc(14*var(--u))}
+.col li::before{content:"✕";color:#94A3B8;font-weight:700}
+.col.boa li::before{content:"✓";color:var(--tintaTema)}
+.botao{display:inline-flex;margin-top:calc(44*var(--u));padding:calc(28*var(--u)) calc(52*var(--u));border-radius:999px;font-weight:700;font-size:calc(36*var(--u));color:#fff;
+  background:linear-gradient(140deg,var(--tintaTema),var(--acento));box-shadow:inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.45),0 calc(20*var(--u)) calc(40*var(--u)) calc(-12*var(--u)) var(--acento)}
+.selo{display:inline-block;padding:calc(12*var(--u)) calc(26*var(--u));border-radius:999px;font-weight:700;font-size:calc(26*var(--u));color:#fff;background:var(--tintaTema);margin-bottom:calc(28*var(--u))}
+
+/* vertical 9:16 e quadrados: empilha */
+body.vertical .area{top:calc(190*var(--u));left:calc(60*var(--u));right:calc(60*var(--u));align-items:center}
+body.vertical .painel{flex:1 1 auto;max-height:100%}
+body.vertical .o1{right:calc(-30*var(--u));top:calc(150*var(--u))}
+body.vertical .o2{right:calc(250*var(--u));top:calc(150*var(--u))}
+body.vertical .painel{padding:calc(64*var(--u)) calc(56*var(--u))}
+body.vertical .cols{grid-template-columns:1fr}
+body.vertical .topo,body.vertical .rodape{left:calc(60*var(--u));right:calc(60*var(--u))}
+body.vertical h1{font-size:calc(108*var(--u))}
+body.vertical h2{font-size:calc(78*var(--u))}
+body.vertical .sub{font-size:calc(46*var(--u))}
+body.vertical .item{font-size:calc(42*var(--u))}
+body.vertical .codigo{white-space:pre-wrap;word-break:break-word;font-size:calc(32*var(--u))}
+body.vertical .destaque{font-size:calc(84*var(--u))}
+body.vertical .col li{font-size:calc(38*var(--u))}
+.painel{overflow:hidden}
+
+/* ---------- ilustração ---------- */
+.ilustra{position:absolute;z-index:3;display:none;filter:drop-shadow(0 30px 40px rgba(15,23,42,.10))}
+.ilustra svg{width:100%;height:100%;display:block}
+body.com-ilustra .ilustra{display:block}
+body.com-ilustra .o1,body.com-ilustra .o2,body.com-ilustra .o3{display:none}
+body.fmt-16x9.com-ilustra .area,body.fmt-thumb.com-ilustra .area{right:44%}
+body.fmt-16x9.com-ilustra .ilustra,body.fmt-thumb.com-ilustra .ilustra{right:calc(40*var(--u));top:calc(130*var(--u));bottom:calc(var(--safe-bottom) - 40px);width:45%}
+body.fmt-thumb.com-ilustra .area{right:47%;top:calc(130*var(--u));bottom:calc(70*var(--u))}
+body.fmt-1x1.com-ilustra .ilustra{right:10px;top:70px;width:700px;height:560px}
+body.fmt-1x1.com-ilustra .area{top:560px;bottom:56px}
+body.fmt-1x1.com-ilustra .painel{padding:40px 52px;justify-content:flex-start}
+body.fmt-4x5.com-ilustra .ilustra{right:10px;top:80px;width:760px;height:640px}
+body.fmt-4x5.com-ilustra .area{top:690px;bottom:60px}
+body.fmt-9x16.com-ilustra .ilustra{left:40px;right:40px;top:170px;height:820px}
+body.fmt-9x16.com-ilustra .area{top:980px}
+body.fmt-9x16.com-ilustra .painel{flex:0 1 auto}
+
+/* ---------- personagem (biblioteca marca/personagens) ---------- */
+.personagem{position:absolute;z-index:4;display:none}
+.personagem svg{width:100%;height:100%;display:block}
+body.com-personagem .personagem{display:block}
+body.com-personagem .o1,body.com-personagem .o2{display:none}
+body.fmt-16x9.com-personagem .area{right:calc(500*var(--u))}
+body.fmt-16x9.com-personagem .personagem{right:calc(20*var(--u));bottom:calc(var(--safe-bottom) - 30px);width:calc(560*var(--u));height:calc(500*var(--u))}
+body.fmt-9x16.com-personagem .personagem{left:240px;right:40px;top:150px;height:560px}
+body.fmt-9x16.com-personagem .area{top:720px}
+body.fmt-1x1.com-personagem .personagem,body.fmt-4x5.com-personagem .personagem{right:0;bottom:30px;width:400px;height:340px}
+body.fmt-1x1.com-personagem .area,body.fmt-4x5.com-personagem .area{right:300px}
+body.sem-legenda{--safe-bottom:calc(120*var(--u))}
+</style>
+</head>
+<body>
+<div class="palco">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="grade"></div>
+  <div class="orbe o1"></div><div class="orbe o2"></div><div class="orbe o3"></div>
+  <div class="topo">
+    <div class="wordmark" id="wordmark"><span class="glifo"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span>CodeMatrix <span class="acad">Academy</span></span></div>
+    <div class="chip vidro" id="chip"><span class="ponto"></span><span id="tema-nome"></span></div>
+  </div>
+  <div class="ilustra" id="ilustra"></div>
+  <div class="personagem" id="personagem"></div>
+  <div class="area"><div class="painel vidro" id="painel"></div></div>
+  <div class="rodape"><span id="rotulo"></span><span class="prog" id="prog"></span></div>
+</div>
+<script>
+(function(){
+  const C = window.CENA || {tipo:"capa", titulo:"Seu primeiro app com IA", subtitulo:"Do zero à loja, com a IA como copiloto", eyebrow:"Aula 1", tema:"ia"};
+  const T = window.TOKENS || null;
+  const fmt = (window.FORMATO || "16x9");
+  const dims = {"16x9":[1920,1080],"9x16":[1080,1920],"1x1":[1080,1080],"4x5":[1080,1350],"thumb":[1280,720]}[fmt] || [1920,1080];
+  const r = document.documentElement.style;
+  r.setProperty("--w", dims[0]+"px"); r.setProperty("--h", dims[1]+"px");
+  const escala = fmt==="9x16" ? 1.0 : fmt==="1x1"||fmt==="4x5" ? 0.78 : fmt==="thumb" ? 0.72 : 1.0;
+  r.setProperty("--u", escala+"px");
+  if (fmt==="9x16"||fmt==="1x1"||fmt==="4x5") document.body.classList.add("vertical");
+  document.body.classList.add("fmt-"+fmt);
+  if (window.PERSONAGEM){ document.getElementById("personagem").innerHTML = window.PERSONAGEM; document.body.classList.add("com-personagem"); }
+  if (window.ILUSTRACAO){ document.getElementById("ilustra").innerHTML = window.ILUSTRACAO; document.body.classList.add("com-ilustra"); }
+  if (fmt==="9x16") r.setProperty("--safe-bottom", "420px");
+  if (window.SEM_LEGENDA || fmt==="1x1"||fmt==="thumb"||fmt==="4x5") document.body.classList.add("sem-legenda");
+  if (T){
+    const tm = T.temas[C.tema] || T.temas.ia;
+    r.setProperty("--acento", tm.acento); r.setProperty("--sec", tm.secundaria); r.setProperty("--tintaTema", tm.tinta);
+    r.setProperty("--marca", T.marca.primaria); r.setProperty("--ink", T.marca.tinta); r.setProperty("--fundo", T.marca.fundo);
+    document.getElementById("tema-nome").textContent = tm.nome;
+  }
+  if (window.LOGO){ document.getElementById("wordmark").innerHTML = '<img src="'+window.LOGO+'" alt=""><span class="acad">Academy</span>'; }
+  if (C.esconder_chip) document.getElementById("chip").style.display="none";
+  const esc = s => String(s??"").replace(/[&<>]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const realce = s => esc(s).replace(/\*(.+?)\*/g,'<span class="marca-txt">$1</span>');
+  const p = document.getElementById("painel");
+  const it = (arr)=> '<div class="itens">'+(arr||[]).slice(0,4).map((x,i)=>'<div class="item vidro"><span class="num">'+(i+1)+'</span><span>'+realce(x)+'</span></div>').join("")+'</div>';
+  const H = {
+    capa: ()=> (C.eyebrow?'<div class="eyebrow">'+esc(C.eyebrow)+'</div>':'')+'<h1>'+realce(C.titulo)+'</h1>'+(C.subtitulo?'<div class="sub">'+realce(C.subtitulo)+'</div>':''),
+    capa_produto: ()=> (C.selo?'<div><span class="selo">'+esc(C.selo)+'</span></div>':'')+'<h1>'+realce(C.titulo)+'</h1>'+(C.subtitulo?'<div class="sub">'+realce(C.subtitulo)+'</div>':''),
+    thumb: ()=> '<h1 style="font-size:calc(120*var(--u))">'+realce(C.titulo)+'</h1>',
+    secao: ()=> '<div class="grande-num marca-txt">'+esc(C.numero||"01")+'</div><h1 style="margin-top:calc(20*var(--u))">'+realce(C.titulo)+'</h1>'+(C.texto?'<div class="sub">'+realce(C.texto)+'</div>':''),
+    topicos: ()=> '<h2>'+realce(C.titulo)+'</h2>'+it(C.itens),
+    passo: ()=> '<div class="eyebrow">Passo '+esc(C.numero||1)+'</div><h2>'+realce(C.titulo)+'</h2><div class="sub" style="margin-top:0">'+realce(C.texto)+'</div>',
+    codigo: ()=> '<h2 style="font-size:calc(52*var(--u))">'+realce(C.titulo)+'</h2><div class="codigo"><div class="bar"><i></i><i></i><i></i></div>'+esc(C.codigo)+'</div>',
+    destaque: ()=> '<div class="destaque">'+realce(C.texto)+'</div>',
+    comparacao: ()=> '<h2>'+realce(C.titulo)+'</h2><div class="cols"><div class="col vidro ruim"><h3>'+esc((C.esquerda||{}).titulo)+'</h3><ul>'+((C.esquerda||{}).itens||[]).map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></div><div class="col vidro boa"><h3>'+esc((C.direita||{}).titulo)+'</h3><ul>'+((C.direita||{}).itens||[]).map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></div></div>',
+    cta: ()=> '<h1>'+realce(C.titulo)+'</h1>'+(C.texto?'<div class="sub">'+realce(C.texto)+'</div>':'')+'<div><span class="botao">'+esc(C.botao||"Comece agora")+'</span></div>'
+  };
+  p.innerHTML = (H[C.tipo]||H.capa)();
+  document.getElementById("rotulo").textContent = C.rotulo || "";
+  if (C.total){ document.getElementById("prog").innerHTML = Array.from({length:Math.min(C.total,12)},(_,i)=>'<b class="'+(i<C.indice?'on':'')+'"></b>').join(""); }
+  // encaixe automático (depois das fontes carregarem): reduz o texto até caber no painel
+  const encaixar = () => {
+    const alvo = Array.from(p.querySelectorAll("h1,h2,.sub,.item,.destaque,.col li,.col h3,.codigo,.grande-num"));
+    for (let n = 0; n < 16 && p.scrollHeight > p.clientHeight + 2; n++) {
+      alvo.forEach(el => { const f = parseFloat(getComputedStyle(el).fontSize); el.style.fontSize = (f * 0.94) + "px"; });
+    }
+    document.body.dataset.pronto = "1";
+  };
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(encaixar);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Checagens automáticas aplicadas por `rex revisar` em toda peça. Adicione novas aqui e registre no LOG.
+# severidade: bloqueia (impede publicar) | ajustar (pede revisão humana)
+- {regra: RC-002, padrao: '\b(renda|lucro|ganho|resultado)s?\s+garantid[oa]s?', motivo: "Promessa de ganho/resultado garantido", severidade: bloqueia}
+- {regra: RC-002, padrao: '\bgaranti(mos|do)\s+que\s+voc[eê]\s+(vai|ir[aá])\s+(ganhar|faturar|lucrar)', motivo: "Garantia de ganho", severidade: bloqueia}
+- {regra: RC-002, padrao: '\b(ganhe|fature|lucre)\s+(at[eé]\s+)?r\$\s?\d', motivo: "Valor de ganho prometido", severidade: bloqueia}
+- {regra: RC-002, padrao: '\bfique\s+rico|enrique[cç]a\b|dinheiro\s+f[aá]cil', motivo: "Promessa de enriquecimento", severidade: bloqueia}
+- {regra: RC-002, padrao: '\b(cura|curar|tratamento\s+definitivo)\b', motivo: "Alegação de saúde", severidade: bloqueia}
+- {regra: RC-002, padrao: '\b(compre|invista\s+em)\s+(a[cç][aã]o|a[cç][oõ]es|bitcoin|cripto)', motivo: "Recomendação de investimento", severidade: bloqueia}
+- {regra: RC-002, padrao: '[uú]ltimas?\s+vagas|s[oó]\s+hoje|vagas\s+limitadas', motivo: "Escassez — confirme que é real", severidade: ajustar}
+- {regra: RC-002, padrao: '\bvoc[eê]\s+(que\s+)?(est[aá]|é)\s+(endividad|obes|deprimid|desempregad)', motivo: "Atributo pessoal (reprova na Meta)", severidade: ajustar}
+- {regra: RC-003, padrao: '\bem\s+\d+\s+dias\s+voc[eê]\s+(vai|ir[aá])', motivo: "Prazo de resultado — confirme que a aula entrega", severidade: ajustar}
+- {regra: RC-002, padrao: '\d[\d\.]*\s+alunos|depoimento|aluno\s+\w+\s+faturou', motivo: "Prova social — use só se for real", severidade: ajustar}
+- {regra: RC-008, padrao: '\bCode\s?Matrix\s+(Academia|academy)\b', motivo: "Nome da marca fora do padrão (use 'CodeMatrix Academy')", severidade: ajustar, sensivel_caixa: true}

@@ -1,0 +1,29 @@
+[project]
+name = "rendaextra"
+version = "0.3.0"
+description = "CodeMatrix Academy — fábrica de cursos (Kiwify/Hotmart) com IA local"
+requires-python = ">=3.11"
+dependencies = [
+  "requests>=2.31",
+  "pyyaml>=6.0",
+  "keyring>=24",
+]
+
+[project.optional-dependencies]
+mcp = ["mcp>=1.2"]
+video = ["playwright>=1.40", "pillow>=10"]
+voz = ["kokoro>=0.9", "soundfile"]
+dev = ["pytest>=8"]
+
+[project.scripts]
+rex = "rendaextra.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["rendaextra*", "mcp_server*"]
+
+[tool.setuptools.package-data]
+rendaextra = ["templates/*"]

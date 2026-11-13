@@ -1,0 +1,19 @@
+Set-Location $PSScriptRoot
+ollama create cma-analista-de-metricas-nemo -f cma-analista-de-metricas.Modelfile
+ollama create cma-economista-de-negocios-nemo -f cma-economista-de-negocios.Modelfile
+ollama create cma-economista-de-vendas-nemo -f cma-economista-de-vendas.Modelfile
+ollama create cma-estrategista-oferta-nemo -f cma-estrategista-oferta.Modelfile
+ollama create cma-jurista-consumidor-publicidade-nemo -f cma-jurista-consumidor-publicidade.Modelfile
+ollama create cma-jurista-direito-digital-nemo -f cma-jurista-direito-digital.Modelfile
+ollama create cma-especialista-marketing-digital-nemo -f cma-especialista-marketing-digital.Modelfile
+ollama create cma-gestor-de-trafego-nemo -f cma-gestor-de-trafego.Modelfile
+ollama create cma-publicitario-nemo -f cma-publicitario.Modelfile
+ollama create cma-redator-publicitario-nemo -f cma-redator-publicitario.Modelfile
+ollama create cma-pesquisador-nemo -f cma-pesquisador.Modelfile
+ollama create cma-diretor-audiovisual-nemo -f cma-diretor-audiovisual.Modelfile
+ollama create cma-especialista-marketing-de-imagem-nemo -f cma-especialista-marketing-de-imagem.Modelfile
+ollama create cma-redator-de-conteudo-nemo -f cma-redator-de-conteudo.Modelfile
+ollama create cma-roteirista-nemo -f cma-roteirista.Modelfile
+ollama create cma-corretor-revisor-nemo -f cma-corretor-revisor.Modelfile
+ollama create cma-revisor-compliance-nemo -f cma-revisor-compliance.Modelfile
+ollama create cma-especialista-vendas-internet-nemo -f cma-especialista-vendas-internet.Modelfile

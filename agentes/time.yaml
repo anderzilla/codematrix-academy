@@ -1,0 +1,53 @@
+# Time da CodeMatrix Academy por etapa. Usado pelo `rex painel` e pelo `rex dia` (revisão automática).
+# responsaveis produzem; revisores dão parecer (APROVADO | AJUSTAR | BLOQUEAR) sobre os arquivos listados.
+# Um BLOQUEAR de qualquer revisor impede publicar. Revisor nunca revisa peça que ele mesmo produziu.
+
+etapas:
+  - id: pesquisa
+    nome: "1. Pesquisa de mercado"
+    responsaveis: [pesquisador]
+    revisores: [economista-de-vendas]
+    arquivos: []
+  - id: oferta
+    nome: "2. Oferta modelada"
+    responsaveis: [estrategista-oferta]
+    revisores: [economista-de-vendas, economista-de-negocios, jurista-consumidor-publicidade]
+    arquivos: [oferta.md]
+  - id: conteudo
+    nome: "3. Conteúdo do curso"
+    responsaveis: [roteirista, redator-de-conteudo]
+    revisores: [corretor-revisor]
+    arquivos: [aula1.md]
+  - id: visual
+    nome: "4. Visual e vídeo"
+    responsaveis: [especialista-marketing-de-imagem, diretor-audiovisual]
+    revisores: [corretor-revisor]
+    arquivos: [aula1_slides.md]
+  - id: pagina
+    nome: "5. Página de vendas"
+    responsaveis: [redator-publicitario]
+    revisores: [corretor-revisor, jurista-consumidor-publicidade]
+    arquivos: [pagina_copy.md]
+  - id: campanha
+    nome: "6. Campanha e divulgação"
+    responsaveis: [publicitario, redator-publicitario, especialista-marketing-digital, gestor-de-trafego]
+    revisores: [jurista-consumidor-publicidade, corretor-revisor]
+    arquivos: [anuncios.md, mensagens.md]
+  - id: venda
+    nome: "7. Venda e checkout"
+    responsaveis: [especialista-vendas-internet]
+    revisores: [economista-de-vendas]
+    arquivos: [oferta.md]
+  - id: publicacao
+    nome: "8. Gate de publicação"
+    responsaveis: [founder]
+    revisores: [jurista-direito-digital, revisor-compliance]
+    arquivos: [pagina_copy.md, oferta.md]
+  - id: analise
+    nome: "9. Análise e melhoria contínua"
+    responsaveis: [analista-de-metricas]
+    revisores: [economista-de-negocios]
+    arquivos: []
+
+# Quais etapas o `rex dia` revisa automaticamente (modelo local, custo zero). Corte etapas se ficar lento.
+revisao_automatica_no_dia: [oferta, pagina, campanha, publicacao]

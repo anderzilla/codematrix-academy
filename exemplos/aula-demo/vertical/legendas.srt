@@ -1,0 +1,100 @@
+1
+00:00:00,350 --> 00:00:02,192
+Bem-vindo à primeira aula.
+
+2
+00:00:02,192 --> 00:00:05,805
+Hoje você sai do zero e
+termina com a primeira tela
+
+3
+00:00:05,805 --> 00:00:08,427
+do seu aplicativo rodando no
+celular.
+
+4
+00:00:09,317 --> 00:00:10,866
+São quatro entregas:
+
+5
+00:00:10,866 --> 00:00:14,198
+a ideia em uma frase, a tela
+inicial gerada
+
+6
+00:00:14,198 --> 00:00:17,529
+com IA, o primeiro teste no
+seu celular e a
+
+7
+00:00:17,529 --> 00:00:20,086
+lista do que falta para
+publicar.
+
+8
+00:00:20,983 --> 00:00:22,032
+Primeiro passo:
+
+9
+00:00:22,032 --> 00:00:24,480
+descreva o aplicativo em uma
+frase.
+
+10
+00:00:24,480 --> 00:00:27,277
+Para quem ele é, qual problema
+resolve e
+
+11
+00:00:27,277 --> 00:00:29,445
+o que aparece na primeira
+tela.
+
+12
+00:00:30,350 --> 00:00:33,752
+Agora crie o projeto com três
+comandos e peça
+
+13
+00:00:33,752 --> 00:00:36,323
+para a IA escrever a tela
+inicial.
+
+14
+00:00:36,323 --> 00:00:39,196
+Você revisa o código antes de
+aceitar.
+
+15
+00:00:40,083 --> 00:00:41,739
+Um cuidado importante:
+
+16
+00:00:41,739 --> 00:00:44,824
+não peça o aplicativo inteiro
+de uma vez.
+
+17
+00:00:44,824 --> 00:00:47,985
+Peça uma tela por vez e revise
+cada parte.
+
+18
+00:00:47,985 --> 00:00:50,468
+Assim o erro fica fácil de
+achar.
+
+19
+00:00:51,383 --> 00:00:52,024
+Sua vez.
+
+20
+00:00:52,024 --> 00:00:56,672
+Abra o Expo Go, escaneie o QR
+code e veja seu app rodando.
+
+21
+00:00:56,672 --> 00:01:00,999
+Na próxima aula, a gente cria
+a navegação entre telas.
+

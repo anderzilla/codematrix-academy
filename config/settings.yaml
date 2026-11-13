@@ -1,0 +1,83 @@
+# Configuração da Fábrica de Ofertas. Valores entre <> precisam ser preenchidos por você.
+
+marca:
+  nome: "CodeMatrix Academy"       # sub-marca da CodeMatrix (RN-004)
+  autor: "Anderson"
+  instagram: "<@perfil>"
+  tom: "direto, prático, sem promessas exageradas, linguagem de quem faz"
+  plataforma_principal: kiwify     # kiwify | hotmart
+
+ia_local:
+  host: "http://127.0.0.1:11434"   # ex.: http://anderzilla-rog:11434 se o Ollama estiver no servidor
+  modelos:
+    texto: "qwen2.5:14b"           # rascunhos, roteiros, copy em PT-BR (cabe em 12 GB de VRAM)
+    rapido: "llama3.1:8b"          # classificação, resumos, variações curtas
+    embeddings: "nomic-embed-text" # RAG
+    # alternativa testável: "nemotron-mini" (rápido, menor). Confirme com `ollama list`.
+  timeout_s: 600
+  janela_bloqueada: ["00:00", "06:00"]  # treino QLoRA no servidor: não usar o Ollama nesse horário
+
+ia_paga:
+  habilitada: true                 # false = tudo no Ollama
+  provedor: anthropic              # anthropic | openai
+  modelos:
+    barato: "claude-haiku-5-5"
+    forte: "claude-sonnet-5-5"
+  # Preço por milhão de tokens (US$). CONFIRME na página de preços do provedor antes de usar.
+  precos_usd_mtok:
+    claude-haiku-5-5: {entrada: 1.0, saida: 5.0}
+    claude-sonnet-5-5: {entrada: 3.0, saida: 15.0}
+  teto_mensal_usd: 15              # passou disso, tudo cai para o Ollama
+  max_tokens_saida: 4000
+
+# Qual "motor" cada etapa usa. local = Ollama | barato | forte = IA paga
+roteamento:
+  pontuar_oportunidade: local
+  modelar_oferta: local
+  pagina_vendas: local
+  revisao_final_copy: forte        # a única peça que vai para o público em escala
+  anuncios: local
+  roteiro_aula: local
+  curso_completo: local
+  checklist: local
+  analise_semanal: barato
+  resumo_concorrente: local
+  painel_revisao: local            # cada agente pode pedir outro motor em modelo_sugerido
+  cenas_video: local
+
+validacao:                         # critério para produzir o curso completo
+  janela_dias: 7
+  pre_vendas_minimas: 5            # ou...
+  conversao_pagina_minima: 0.02    # 2% das visitas da página de pré-venda
+  max_ajustes_antes_de_arquivar: 1
+
+decisao:                           # regras do `rex decidir` (aplicadas com 14+ dias de dados)
+  escalar_se_lucro_liquido_mensal_maior_que: 1500
+  matar_se_vendas_14d_menor_que: 2
+  alerta_reembolso_maior_que: 0.10 # 10% de reembolso = problema de promessa ou entrega
+
+financeiro:                        # para calcular lucro líquido estimado
+  kiwify: {percentual: 0.0899, fixo: 2.49}
+  hotmart: {percentual: 0.099, fixo: 2.49}
+  imposto_sobre_faturamento: 0.06  # ajuste com seu contador
+  acrescimo_imposto_anuncio_meta: 0.1215
+  meta_lucro_liquido_mensal: 5000
+
+originalidade:
+  limite_similaridade: 0.35        # acima disso a peça é bloqueada por parecer cópia
+  ngram: 5
+
+video:
+  voz_motor: kokoro                # kokoro (local, Apache-2.0) | piper (local) | azure | elevenlabs | silencio (ensaio)
+  kokoro_voz: pm_alex              # pt-BR: pm_alex, pm_santa, pf_dora (confira na sua versão)
+  piper_modelo: "modelos/pt_BR-faber-medium.onnx"
+  azure_voz: "pt-BR-AntonioNeural" # ou pt-BR-FranciscaNeural; conta e teto aprovados pelo Founder (RN-001)
+  azure_regiao: brazilsouth
+  elevenlabs_voz_id: "<id da voz>"
+  elevenlabs_modelo: eleven_multilingual_v2
+  velocidade: 1.0
+
+caminhos:
+  db: "data/rendaextra.db"
+  saidas: "saidas"
+  kb: "kb"
