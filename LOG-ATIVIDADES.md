@@ -11,6 +11,10 @@ Comando: `rex log add --modelo <modelo> --agente <id> --tipo <tipo> --texto "...
 
 <!-- ENTRADAS: novas entradas são inseridas logo abaixo desta linha -->
 
+### 2026-11-25 13:57 · melhoria · antigravity · plataforma-academy
+Etapa 1/4 da plataforma web CodeMatrix Academy adicionada em `platform/` (Next.js 16 + React 19 + TypeScript + `node:sqlite`): vitrine pública com identidade visual CodeMatrix, catálogo multi-curso (`published` vs `draft`), seed idempotente da Formação IA/AnderZilla (Módulo 1 com 5 blocos, 15 aulas, 60 slides e 60 questões no servidor; Módulos 2–3 marcados como planejados), adapter/webhook Hotmart autenticado por `X-HOTMART-HOTTOK` com idempotência e modo fail-closed (sem conceder direitos na Etapa 1) e gates de acesso para `/app`, `/partners` e `/admin`.
+Arquivos: platform/, platform/docs/ARCHITECTURE.md, platform/docs/SETUP.md, platform/scripts/seed-catalog.mjs, platform/src/lib/payments/hotmart.ts, platform/test/stage1.test.mjs
+
 ### 2026-11-13 13:47 · aprendizado · claude-opus-5-5 · estrategista-oferta
 Aula do Pocket = vídeo animado curto (cenas, ~1–2 min) + gravação de tela de 4–6 min usando o material; as cenas sozinhas não cobrem a duração-alvo do roteiro.
 

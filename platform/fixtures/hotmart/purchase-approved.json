@@ -1,0 +1,27 @@
+{
+  "id": "evt-sandbox-approved-0001",
+  "creation_date": 1764080000000,
+  "event": "PURCHASE_APPROVED",
+  "version": "2.0.0",
+  "data": {
+    "product": {
+      "id": 990001,
+      "name": "Formação IA — Módulo 1 (Sandbox)"
+    },
+    "buyer": {
+      "email": "aluno.teste@example.invalid",
+      "name": "Aluno Sintético"
+    },
+    "purchase": {
+      "transaction": "HP-SANDBOX-0001",
+      "status": "APPROVED",
+      "offer": {
+        "code": "SANDBOX-M1"
+      },
+      "price": {
+        "value": 0,
+        "currency_value": "BRL"
+      }
+    }
+  }
+}
