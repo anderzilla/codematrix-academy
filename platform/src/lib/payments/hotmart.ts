@@ -5,6 +5,7 @@ import {
   grantEntitlement,
   revokeOrSuspendByTransaction,
 } from '@/lib/entitlements';
+import { appendLedgerEntry } from '@/lib/ledger';
 import {
   attributeHotmartCommission,
   blockCommissionsByTransaction,
@@ -415,7 +416,7 @@ export function recordHotmartWebhookEvent(
         entitlementGranted = true;
         entitlementStatus = 'granted';
 
-        attributeHotmartCommission(db, {
+        const commissionOutcome = attributeHotmartCommission(db, {
           courseId: offerMatch.course_id,
           offerSku: offerMatch.sku,
           transactionCode: normalized.transactionCode,
@@ -426,6 +427,39 @@ export function recordHotmartWebhookEvent(
           buyerEmailHash: normalized.buyerEmailHash,
           couponCode: normalized.couponCode,
           linkCode: normalized.linkCode,
+        });
+
+        let commissionCents = 0;
+        let discountCents = 0;
+        let partnerId: string | null = null;
+        if (commissionOutcome.attributed && commissionOutcome.entryId) {
+          const ce = db
+            .prepare(
+              `SELECT partner_id, commission_cents, discount_cents FROM commission_entries WHERE id = ?`,
+            )
+            .get(commissionOutcome.entryId) as
+            | { partner_id: string; commission_cents: number; discount_cents: number }
+            | undefined;
+          if (ce) {
+            partnerId = ce.partner_id;
+            commissionCents = Number(ce.commission_cents);
+            discountCents = Number(ce.discount_cents);
+          }
+        }
+
+        appendLedgerEntry(db, {
+          entryType: 'sale',
+          courseId: offerMatch.course_id,
+          offerSku: offerMatch.sku,
+          partnerId,
+          transactionCode: normalized.transactionCode,
+          sourceEventId: normalized.providerEventId,
+          grossCents: normalized.grossCents,
+          discountCents,
+          gatewayFeeCents: normalized.gatewayFeeCents,
+          commissionCents,
+          currency: normalized.currency,
+          notes: `Venda Hotmart ${normalized.eventType}`,
         });
       } else {
         entitlementStatus = 'unmapped_sku';
@@ -442,6 +476,21 @@ export function recordHotmartWebhookEvent(
         transactionCode: normalized.transactionCode,
         eventType: normalized.eventType,
         sourceEventId: normalized.providerEventId,
+      });
+
+      const isChargeback =
+        normalized.eventType === 'PURCHASE_CHARGEBACK' ||
+        normalized.eventType === 'PURCHASE_PROTEST';
+      appendLedgerEntry(db, {
+        entryType: isChargeback ? 'chargeback' : 'refund',
+        courseId: offerMatch?.course_id ?? null,
+        offerSku: offerMatch?.sku ?? null,
+        transactionCode: normalized.transactionCode,
+        sourceEventId: normalized.providerEventId,
+        refundCents: isChargeback ? 0 : normalized.grossCents,
+        chargebackCents: isChargeback ? normalized.grossCents : 0,
+        currency: normalized.currency,
+        notes: `Estorno Hotmart ${normalized.eventType}`,
       });
       entitlementStatus =
         revoked.updatedCount > 0 ? revoked.targetStatus : 'no_active_entitlement';

@@ -514,3 +514,55 @@ CREATE INDEX IF NOT EXISTS idx_partner_coupons_partner ON partner_coupons(partne
 CREATE INDEX IF NOT EXISTS idx_commission_entries_partner ON commission_entries(partner_id, status);
 CREATE INDEX IF NOT EXISTS idx_commission_entries_tx ON commission_entries(transaction_code);
 CREATE INDEX IF NOT EXISTS idx_audit_events_target ON audit_events(target_type, target_id, created_at);
+
+
+-- ============================================================================
+-- ETAPA 4: MFA/Step-up Admin, Ledger Financeiro Append-Only e Pedidos LGPD
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS session_mfa (
+  session_token_hash TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  method TEXT NOT NULL DEFAULT 'totp_step_up',
+  verified_at TEXT NOT NULL DEFAULT (datetime('now')),
+  expires_at TEXT NOT NULL
+);
+
+-- Razão operacional append-only (nunca sobrescrever; ajustes são novos lançamentos)
+CREATE TABLE IF NOT EXISTS financial_ledger (
+  id TEXT PRIMARY KEY,
+  entry_type TEXT NOT NULL CHECK (entry_type IN ('sale', 'refund', 'chargeback', 'adjustment')),
+  course_id TEXT REFERENCES courses(id) ON DELETE RESTRICT,
+  offer_sku TEXT,
+  partner_id TEXT REFERENCES partner_profiles(id) ON DELETE SET NULL,
+  transaction_code TEXT NOT NULL,
+  source_event_id TEXT,
+  gross_cents INTEGER NOT NULL DEFAULT 0,
+  discount_cents INTEGER NOT NULL DEFAULT 0,
+  gateway_fee_cents INTEGER NOT NULL DEFAULT 0,
+  commission_cents INTEGER NOT NULL DEFAULT 0,
+  refund_cents INTEGER NOT NULL DEFAULT 0,
+  chargeback_cents INTEGER NOT NULL DEFAULT 0,
+  net_cents INTEGER NOT NULL DEFAULT 0,
+  currency TEXT NOT NULL DEFAULT 'BRL',
+  competence_date TEXT NOT NULL,
+  cash_date TEXT,
+  notes TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS lgpd_requests (
+  id TEXT PRIMARY KEY,
+  user_id TEXT REFERENCES users(id) ON DELETE SET NULL,
+  requester_email_hash TEXT NOT NULL,
+  request_type TEXT NOT NULL CHECK (request_type IN ('export_data', 'delete_data', 'rectify_data')),
+  status TEXT NOT NULL DEFAULT 'pending_approval' CHECK (status IN ('pending_approval', 'approved', 'rejected', 'completed')),
+  reason TEXT NOT NULL DEFAULT '',
+  reviewed_by TEXT,
+  reviewed_at TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_ledger_tx ON financial_ledger(transaction_code, created_at);
+CREATE INDEX IF NOT EXISTS idx_ledger_course ON financial_ledger(course_id, competence_date);
+CREATE INDEX IF NOT EXISTS idx_lgpd_status ON lgpd_requests(status, created_at);

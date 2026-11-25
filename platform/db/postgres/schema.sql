@@ -388,3 +388,50 @@ CREATE TABLE IF NOT EXISTS certificates (
   revoked_at TIMESTAMPTZ,
   UNIQUE (user_id, course_id, scope_label)
 );
+
+
+-- ============================================================================
+-- ETAPA 4 (PostgreSQL 16): MFA Admin, Ledger Financeiro Append-Only e LGPD
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS session_mfa (
+  session_token_hash TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  method TEXT NOT NULL DEFAULT 'totp_step_up',
+  verified_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  expires_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS financial_ledger (
+  id TEXT PRIMARY KEY,
+  entry_type TEXT NOT NULL CHECK (entry_type IN ('sale', 'refund', 'chargeback', 'adjustment')),
+  course_id TEXT REFERENCES courses(id) ON DELETE RESTRICT,
+  offer_sku TEXT,
+  partner_id TEXT REFERENCES partner_profiles(id) ON DELETE SET NULL,
+  transaction_code TEXT NOT NULL,
+  source_event_id TEXT,
+  gross_cents INTEGER NOT NULL DEFAULT 0,
+  discount_cents INTEGER NOT NULL DEFAULT 0,
+  gateway_fee_cents INTEGER NOT NULL DEFAULT 0,
+  commission_cents INTEGER NOT NULL DEFAULT 0,
+  refund_cents INTEGER NOT NULL DEFAULT 0,
+  chargeback_cents INTEGER NOT NULL DEFAULT 0,
+  net_cents INTEGER NOT NULL DEFAULT 0,
+  currency TEXT NOT NULL DEFAULT 'BRL',
+  competence_date DATE NOT NULL,
+  cash_date DATE,
+  notes TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS lgpd_requests (
+  id TEXT PRIMARY KEY,
+  user_id TEXT REFERENCES users(id) ON DELETE SET NULL,
+  requester_email_hash TEXT NOT NULL,
+  request_type TEXT NOT NULL CHECK (request_type IN ('export_data', 'delete_data', 'rectify_data')),
+  status TEXT NOT NULL DEFAULT 'pending_approval' CHECK (status IN ('pending_approval', 'approved', 'rejected', 'completed')),
+  reason TEXT NOT NULL DEFAULT '',
+  reviewed_by TEXT,
+  reviewed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

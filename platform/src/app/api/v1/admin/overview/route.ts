@@ -1,17 +1,26 @@
 import { NextResponse } from 'next/server';
-import { getSessionUser } from '@/lib/auth';
-import { isAdminOrOps } from '@/lib/rbac';
+import { getAdminOverview } from '@/lib/admin';
+import { requireAdminSession } from '@/lib/admin-auth';
+import { getDb } from '@/lib/db';
 
 export async function GET() {
-  const user = await getSessionUser();
-  if (!user) {
-    return NextResponse.json({ ok: false, error: 'Autenticação necessária.' }, { status: 401 });
-  }
-  if (!isAdminOrOps(user)) {
+  const auth = await requireAdminSession({ requireMfa: true });
+  if (!auth.ok) {
     return NextResponse.json(
-      { ok: false, error: 'Acesso restrito à equipe administrativa.' },
-      { status: 403 },
+      { ok: false, code: auth.code, error: auth.error },
+      { status: auth.status },
     );
   }
-  return NextResponse.json({ ok: true, stage: 4, message: 'Painel admin será expandido na Etapa 4.' });
+
+  const db = getDb();
+  return NextResponse.json({
+    ok: true,
+    actor: {
+      id: auth.user.id,
+      name: auth.user.name,
+      isFullAdmin: auth.isFullAdmin,
+      mfaVerified: auth.mfaVerified,
+    },
+    overview: getAdminOverview(db),
+  });
 }

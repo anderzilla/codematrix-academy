@@ -79,7 +79,7 @@ export const ACADEMY_SURFACES: SurfaceContract[] = [
     name: 'Painel Administrativo',
     basePath: '/admin',
     stage: 4,
-    status: 'reserved_stage_4',
+    status: 'active',
     requiresAuth: true,
     requiresMfa: true,
     allowedRoles: ['admin', 'ops_support'],
