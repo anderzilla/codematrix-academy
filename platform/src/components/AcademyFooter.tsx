@@ -18,18 +18,18 @@ export function AcademyFooter() {
             />
           </Link>
           <p style={{ margin: '8px 0 0' }}>
-            CodeMatrix Academy · Plataforma educacional independente em{' '}
-            <code>academy.codematrix.com.br</code>
+            CodeMatrix Academy · Ambiente educacional dedicado em{' '}
+            <span>academy.codematrix.com.br</span>
           </p>
         </div>
 
-        <nav aria-label="Links institucionais e superfícies">
-          <Link href="/cursos">Catálogo</Link>
+        <nav aria-label="Links institucionais e áreas da plataforma">
+          <Link href="/cursos">Cursos</Link>
           <Link href="/suporte">Suporte</Link>
           <Link href="/privacidade">Privacidade</Link>
-          <Link href="/termos">Termos</Link>
+          <Link href="/termos">Termos de uso</Link>
           <Link href="/partners">Parceiros</Link>
-          <Link href="/admin">Admin</Link>
+          <Link href="/admin">Administração</Link>
           <a href={CORPORATE_URL} target="_blank" rel="noopener noreferrer">
             codematrix.com.br
           </a>

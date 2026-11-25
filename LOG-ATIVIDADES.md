@@ -11,6 +11,10 @@ Comando: `rex log add --modelo <modelo> --agente <id> --tipo <tipo> --texto "...
 
 <!-- ENTRADAS: novas entradas são inseridas logo abaixo desta linha -->
 
+### 2026-11-25 14:26 · melhoria · antigravity · revisor-ui-ux
+Revisão completa de UI/UX, fluxos e clareza de textos em `platform/`: remoção de jargão técnico interno da vitrine, adição de breadcrumbs de navegação, guia de progressão em 3 passos no detalhe do curso, exibição do objetivo prático de cada uma das 15 aulas, lista clara de entregáveis e liberação na página de oferta, guia de atendimento em `/suporte`, telas de acesso restrito (`/app`, `/partners`, `/admin`) em português natural sem nomes internos de roles e correção de contraste do botão ativo no cabeçalho. Validado em `lint`, `typecheck`, `build`, `test` (3/3) e inspeção visual no browser local.
+Arquivos: platform/src/styles/academy.css, platform/src/components/Breadcrumbs.tsx, platform/src/components/AcademyFooter.tsx, platform/src/components/RestrictedSurfaceGate.tsx, platform/src/components/CmsPageView.tsx, platform/src/app/page.tsx, platform/src/app/cursos/page.tsx, platform/src/app/cursos/[slug]/page.tsx, platform/src/app/oferta/[offerCode]/page.tsx, platform/src/app/not-found.tsx, platform/scripts/seed-catalog.mjs
+
 ### 2026-11-25 13:57 · melhoria · antigravity · plataforma-academy
 Etapa 1/4 da plataforma web CodeMatrix Academy adicionada em `platform/` (Next.js 16 + React 19 + TypeScript + `node:sqlite`): vitrine pública com identidade visual CodeMatrix, catálogo multi-curso (`published` vs `draft`), seed idempotente da Formação IA/AnderZilla (Módulo 1 com 5 blocos, 15 aulas, 60 slides e 60 questões no servidor; Módulos 2–3 marcados como planejados), adapter/webhook Hotmart autenticado por `X-HOTMART-HOTTOK` com idempotência e modo fail-closed (sem conceder direitos na Etapa 1) e gates de acesso para `/app`, `/partners` e `/admin`.
 Arquivos: platform/, platform/docs/ARCHITECTURE.md, platform/docs/SETUP.md, platform/scripts/seed-catalog.mjs, platform/src/lib/payments/hotmart.ts, platform/test/stage1.test.mjs

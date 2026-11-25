@@ -6,17 +6,21 @@ export default function NotFoundPage() {
       <div className="container-narrow">
         <div className="card">
           <span className="badge badge-neutral" style={{ width: 'fit-content' }}>
-            404
+            Página não encontrada
           </span>
           <h1 className="section-heading" style={{ margin: 0 }}>
-            Página não encontrada
+            Não encontramos este endereço
           </h1>
           <p style={{ margin: 0, color: 'var(--cm-muted)' }}>
-            O curso, oferta ou rota solicitada não está disponível ou permanece em rascunho.
+            O link pode estar desatualizado ou o curso/oferta solicitado ainda não foi
+            publicado. Use os atalhos abaixo para continuar navegando.
           </p>
-          <div>
+          <div className="hero-actions" style={{ marginTop: 8 }}>
             <Link href="/cursos" className="pill-btn">
-              Voltar ao catálogo
+              Ver catálogo de cursos
+            </Link>
+            <Link href="/" className="pill-btn pill-btn-secondary">
+              Ir para a página inicial
             </Link>
           </div>
         </div>

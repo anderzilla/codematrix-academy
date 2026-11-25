@@ -434,7 +434,7 @@ export function runSeed({
       'CM-IA-M1-B1-FREE',
       'formacao-ia-amostra-bloco-1',
       'Amostra gratuita — Bloco 1 (Aulas 1 a 3)',
-      'Acesso inicial ao Bloco 1 do Módulo 1 (3 aulas em telas de apresentação e avaliação de fixação de 10 questões). Liberação vinculada à conta do aluno na Etapa 2.',
+      'Experimente as 3 primeiras aulas do Módulo 1 em telas de apresentação, com exemplos práticos e avaliação de fixação de 10 questões — sem cartão de crédito.',
       'course:formacao-ia-anderzilla:block:B01',
       1,
       0,
@@ -498,8 +498,8 @@ export function runSeed({
       {
         slug: 'suporte',
         title: 'Suporte ao Aluno e Operação',
-        subtitle: 'Canais oficiais de atendimento da CodeMatrix Academy.',
-        reviewNotice: 'Conteúdo operacional configurável via banco (cms_pages). Revisar SLA e canais antes do lançamento comercial.',
+        subtitle: 'Canais oficiais de atendimento e orientações para dúvidas sobre cursos, acesso e pagamentos.',
+        reviewNotice: 'Conteúdo operacional em revisão final antes da abertura comercial.',
         sections: [
           {
             heading: 'Atendimento oficial',
@@ -518,9 +518,9 @@ export function runSeed({
       },
       {
         slug: 'privacidade',
-        title: 'Política de Privacidade (Versão de Trabalho)',
-        subtitle: 'Diretrizes de minimização de dados e proteção da privacidade na CodeMatrix Academy.',
-        reviewNotice: 'MINUTA CONFIGURÁVEL: este texto precisa de revisão jurídica e aprovação formal antes da abertura comercial em produção.',
+        title: 'Política de Privacidade',
+        subtitle: 'Como protegemos seus dados pessoais e aplicamos o princípio de minimização na CodeMatrix Academy.',
+        reviewNotice: 'Versão de trabalho sujeita a revisão jurídica formal antes da abertura comercial em produção.',
         sections: [
           {
             heading: 'Minimização de dados',
@@ -539,9 +539,9 @@ export function runSeed({
       },
       {
         slug: 'termos',
-        title: 'Termos de Uso da Academy (Versão de Trabalho)',
-        subtitle: 'Regras de uso da plataforma educacional, propriedade intelectual e acesso aos cursos.',
-        reviewNotice: 'MINUTA CONFIGURÁVEL: prazo de acesso, política de reembolso e cláusulas contratuais precisam de revisão jurídica antes de produção.',
+        title: 'Termos de Uso da Academy',
+        subtitle: 'Regras de acesso, uso do material didático e transparência sobre os cursos da CodeMatrix Academy.',
+        reviewNotice: 'Versão de trabalho sujeita a revisão jurídica formal (prazo de acesso e política de reembolso) antes da abertura comercial.',
         sections: [
           {
             heading: 'Uso pessoal e intransferível',

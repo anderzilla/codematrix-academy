@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { getPublishedCourseBySlug } from '@/lib/catalog';
 
 export const dynamic = 'force-dynamic';
 
 function formatPrice(priceCents: number | null, currency: string, isFree: boolean): string {
-  if (isFree) return 'Gratuito (amostra explícita)';
-  if (priceCents === null) return 'Em definição comercial';
+  if (isFree) return 'Gratuito · sem cartão de crédito';
+  if (priceCents === null) return 'Condições em definição';
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency,
@@ -25,64 +26,128 @@ export default async function CourseDetailPage({
     notFound();
   }
 
+  const freeOffer = course.publishedOffers.find((o) => o.isFree);
+
   return (
     <>
       <section className="hero-section">
         <div className="container">
+          <Breadcrumbs
+            items={[
+              { label: 'Início', href: '/' },
+              { label: 'Cursos', href: '/cursos' },
+              { label: course.title },
+            ]}
+          />
+
           <div className="badge-row" style={{ marginBottom: 14 }}>
             <span className="badge badge-available">Módulo 1 disponível</span>
             <span className="badge badge-brand">{course.category}</span>
             <span className="badge badge-neutral">
-              Mínimo {course.minPassPercent}% por bloco
+              Nota mínima de {course.minPassPercent}% por bloco
             </span>
           </div>
+
           <h1 className="hero-title">{course.title}</h1>
           <p className="hero-subtitle">{course.summary}</p>
+
+          <div className="hero-actions">
+            {freeOffer ? (
+              <Link href={`/oferta/${freeOffer.offerCode}`} className="pill-btn">
+                Ver amostra gratuita (Bloco 1)
+              </Link>
+            ) : null}
+            <a href="#grade-completa" className="pill-btn pill-btn-secondary">
+              Ver todas as 15 aulas
+            </a>
+          </div>
 
           <div className="hero-metrics">
             <div className="metric-card">
               <strong>
-                {course.availableLessonsCount} de {course.plannedLessonsCount} aulas
+                {course.availableLessonsCount} de {course.plannedLessonsCount} aulas prontas
               </strong>
-              <span>Aulas publicadas no Módulo 1; Módulos 2 e 3 seguem planejados.</span>
-            </div>
-            <div className="metric-card">
-              <strong>{course.availableBlocksCount} blocos avaliados</strong>
-              <span>3 aulas por bloco + quiz de 10 questões sorteadas no servidor.</span>
-            </div>
-            <div className="metric-card">
-              <strong>{course.assetsSummary.slidesPacks} conjuntos de slides</strong>
               <span>
-                Vídeos Cloudflare Stream: {course.assetsSummary.streamVideosReady} prontos /{' '}
-                {course.assetsSummary.streamVideosPending} pendentes.
+                Módulo 1 completo e disponível; Módulos 2 e 3 em planejamento transparente.
+              </span>
+            </div>
+            <div className="metric-card">
+              <strong>{course.availableBlocksCount} blocos de estudo</strong>
+              <span>
+                Cada bloco combina 3 aulas em sequência e um quiz de 10 questões com revisão
+                orientada.
+              </span>
+            </div>
+            <div className="metric-card">
+              <strong>Formato prático em telas</strong>
+              <span>
+                {course.assetsSummary.slidesPacks} aulas interativas + projeto didático
+                Intelicar. Vídeos gravados serão adicionados na evolução da plataforma.
               </span>
             </div>
           </div>
         </div>
       </section>
 
+      <section className="section">
+        <div className="container">
+          <p className="eyebrow">Como você vai estudar</p>
+          <h2 className="section-heading">Progressão simples em 3 passos por bloco</h2>
+          <p className="section-lead">
+            Você não precisa ter experiência prévia com programação para começar o Módulo 1.
+            Siga o ritmo abaixo em cada bloco:
+          </p>
+
+          <div className="step-grid">
+            <article className="step-card">
+              <span className="step-card-badge">1</span>
+              <h3>Complete as 3 aulas do bloco</h3>
+              <p>
+                Leia as telas de apresentação em sequência, veja os exemplos práticos e faça as
+                pausas de fixação propostas em cada aula.
+              </p>
+            </article>
+            <article className="step-card">
+              <span className="step-card-badge">2</span>
+              <h3>Faça o quiz de 10 questões</h3>
+              <p>
+                Ao terminar a terceira aula, o quiz do bloco é liberado com 10 perguntas
+                sorteadas. O resultado e as explicações aparecem ao finalizar o envio.
+              </p>
+            </article>
+            <article className="step-card">
+              <span className="step-card-badge">3</span>
+              <h3>Avance com 70% ou revise com guia</h3>
+              <p>
+                Com 7 ou mais acertos (70%), o próximo bloco abre automaticamente. Se ficar
+                abaixo, você vê exatamente quais aulas revisar antes de tentar novamente.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section className="section section-soft">
         <div className="container">
-          <p className="eyebrow">Ofertas e acesso</p>
-          <h2 className="section-heading">Opções publicadas para este curso</h2>
+          <p className="eyebrow">Inscrição e acesso</p>
+          <h2 className="section-heading">Como começar nesta formação</h2>
 
           <div className="grid-2" style={{ marginTop: 20 }}>
             {course.publishedOffers.map((offer) => (
-              <article key={offer.id} className="card">
+              <article key={offer.id} className="card card-highlight">
                 <div className="badge-row">
                   <span className="badge badge-available">
-                    {offer.isFree ? 'Amostra gratuita' : 'Oferta publicada'}
+                    {offer.isFree ? 'Amostra gratuita' : 'Disponível'}
                   </span>
-                  <span className="badge badge-neutral">SKU {offer.sku}</span>
                 </div>
                 <h3 className="course-card-title">{offer.title}</h3>
                 <p style={{ margin: 0, color: 'var(--cm-muted)' }}>{offer.description}</p>
-                <p style={{ margin: 0, fontWeight: 700, color: 'var(--cm-ink)' }}>
+                <p style={{ margin: 0, fontSize: 18, fontWeight: 750, color: 'var(--cm-ink)' }}>
                   {formatPrice(offer.priceCents, offer.currency, offer.isFree)}
                 </p>
-                <div style={{ marginTop: 'auto', paddingTop: 8 }}>
+                <div className="card-actions">
                   <Link href={`/oferta/${offer.offerCode}`} className="pill-btn">
-                    Ver detalhes da oferta
+                    Ver detalhes e como acessar
                   </Link>
                 </div>
               </article>
@@ -91,17 +156,17 @@ export default async function CourseDetailPage({
             {course.draftOffersCount > 0 ? (
               <article className="card">
                 <div className="badge-row">
-                  <span className="badge badge-planned">Em preparação comercial</span>
+                  <span className="badge badge-planned">Abertura em preparação</span>
                 </div>
-                <h3 className="course-card-title">Módulos pagos e pacote completo</h3>
+                <h3 className="course-card-title">Módulo 1 completo e Formação Completa</h3>
                 <p style={{ margin: 0, color: 'var(--cm-muted)' }}>
-                  Existem {course.draftOffersCount} ofertas em estado de rascunho no banco de
-                  dados aguardando definição formal de preço, prazo de acesso e vinculação de
-                  produto na Hotmart. Nenhum preço provisório é publicado nesta etapa.
+                  As inscrições pagas para o Módulo 1 completo (Blocos 1 a 5) e para a trilha
+                  completa (Módulos 1, 2 e 3) estão em preparação. Preço, prazo de acesso e
+                  checkout serão publicados aqui assim que forem definidos oficialmente.
                 </p>
-                <div style={{ marginTop: 'auto', paddingTop: 8 }}>
+                <div className="card-actions">
                   <Link href="/suporte" className="pill-btn pill-btn-secondary">
-                    Falar com o suporte
+                    Tirar dúvidas com o suporte
                   </Link>
                 </div>
               </article>
@@ -110,14 +175,13 @@ export default async function CourseDetailPage({
         </div>
       </section>
 
-      <section className="section">
+      <section id="grade-completa" className="section">
         <div className="container">
-          <p className="eyebrow">Estrutura pedagógica preservada</p>
-          <h2 className="section-heading">Módulos, blocos e sequência de aulas</h2>
+          <p className="eyebrow">Grade curricular</p>
+          <h2 className="section-heading">Módulos, blocos e o que você aprende em cada aula</h2>
           <p className="section-lead">
-            A sequência abaixo reflete exatamente o material verificado em{' '}
-            <code>LEIA-ME.md</code> e <code>assets/formacao.js</code>. Módulos planejados são
-            sinalizados claramente e não possuem aulas inventadas.
+            Confira abaixo a trilha completa. Mostramos exatamente o que já está disponível no
+            Módulo 1 e o que está planejado para os Módulos 2 e 3.
           </p>
 
           <div className="module-stack">
@@ -129,7 +193,7 @@ export default async function CourseDetailPage({
                       mod.status === 'published' ? 'badge-available' : 'badge-planned'
                     }`}
                   >
-                    {mod.status === 'published' ? 'Disponível agora' : 'Planejado'}
+                    {mod.status === 'published' ? 'Disponível agora' : 'Em planejamento'}
                   </span>
                   <span className="badge badge-neutral">Módulo {mod.position}</span>
                 </div>
@@ -141,48 +205,48 @@ export default async function CourseDetailPage({
                     {mod.blocks.map((block) => (
                       <article key={block.id} className="block-card">
                         <div className="badge-row">
-                          <span className="badge badge-brand">{block.code}</span>
+                          <span className="badge badge-brand">Bloco {block.position}</span>
                           {block.isFreeSample ? (
                             <span className="badge badge-available">Amostra gratuita</span>
                           ) : (
-                            <span className="badge badge-neutral">Requer módulo liberado</span>
+                            <span className="badge badge-neutral">Módulo 1 completo</span>
                           )}
                         </div>
                         <h4>{block.title}</h4>
                         <p style={{ margin: 0, fontSize: 14, color: 'var(--cm-muted)' }}>
                           {block.focus}
                         </p>
+
                         <ol className="lesson-list">
                           {block.lessons.map((lesson) => (
-                            <li key={lesson.id}>
-                              <strong>
-                                Aula {String(lesson.position).padStart(2, '0')}:
-                              </strong>{' '}
-                              {lesson.title}{' '}
-                              <span style={{ color: 'var(--cm-muted)' }}>
-                                ({lesson.slidesCount} telas)
-                              </span>
+                            <li key={lesson.id} className="lesson-item">
+                              <div className="lesson-item-head">
+                                <strong>
+                                  Aula {String(lesson.position).padStart(2, '0')} · {lesson.title}
+                                </strong>
+                                <span style={{ color: 'var(--cm-muted)', flexShrink: 0 }}>
+                                  {lesson.slidesCount} telas
+                                </span>
+                              </div>
+                              {lesson.goal ? (
+                                <p className="lesson-item-goal">{lesson.goal}</p>
+                              ) : null}
                             </li>
                           ))}
                         </ol>
-                        <p
-                          style={{
-                            margin: '12px 0 0',
-                            fontSize: 13,
-                            color: 'var(--cm-muted)',
-                          }}
-                        >
-                          Avaliação do bloco: 10 questões sorteadas de um banco de{' '}
-                          {block.quizQuestionBankCount} no servidor · mínimo{' '}
-                          {block.minPassPercent}%.
+
+                        <p className="block-quiz-foot">
+                          <strong>Avaliação do bloco:</strong> 10 questões sorteadas (mínimo{' '}
+                          {block.minPassPercent}% para liberar o próximo bloco).
                         </p>
                       </article>
                     ))}
                   </div>
                 ) : (
                   <div className="notice-box" role="note">
-                    Conteúdo planejado (15 aulas em 5 blocos). Não publicado ainda; nenhuma
-                    aula ou gabarito foi inventado.
+                    <strong>Módulo em produção:</strong> previsto com 15 aulas organizadas em 5
+                    blocos avaliados. Este conteúdo ainda não está liberado e será publicado
+                    somente após revisão didática completa.
                   </div>
                 )}
               </section>
