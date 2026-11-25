@@ -11,6 +11,13 @@ Comando: `rex log add --modelo <modelo> --agente <id> --tipo <tipo> --texto "...
 
 <!-- ENTRADAS: novas entradas são inseridas logo abaixo desta linha -->
 
+### 2026-11-25 18:14 · execucao · antigravity · deploy-azure
+Deploy em produção concluído no Azure Container Apps (`codematrix-academy` / `eastus2`) com autorização do Founder para validação do Mercado Pago (`code.matrix.cwb@gmail.com`):
+- **Recursos provisionados:** ACR `cmacademyacr44b763.azurecr.io` (imagem `codematrix-academy:v1`), Container Apps Environment `cmacademy-cae`, Storage Account `cmacademyst44b763` (File Share `academydata`), Key Vault `cmacademy-kv-44b763` e Container App `codematrix-academy-web`.
+- **URL HTTPS ativa:** `https://codematrix-academy-web.graypebble-5905efa7.eastus2.azurecontainerapps.io` (preparado para subdomínio `academy.codematrix.com.br` com `ACADEMY_PUBLIC_URL=https://academy.codematrix.com.br`).
+- **Ajustes pré-deploy:** `src/app/api/webhooks/mercadopago/route.ts` atualizado para consultar `GET https://api.mercadopago.com/v1/payments/{id}` em produção quando o webhook envia apenas `data.id`, suporte a ping de teste assinado do painel Mercado Pago e `GET` de prontidão; `Dockerfile`, `.dockerignore` e `scripts/docker-start.mjs` inicializam automaticamente o catálogo seedado no boot do container.
+Arquivos: platform/src/app/api/webhooks/mercadopago/route.ts, platform/Dockerfile, platform/.dockerignore, platform/scripts/docker-start.mjs
+
 ### 2026-11-25 17:15 · melhoria · antigravity · plataforma-academy
 Hardening completo pós-auditoria QA + remoção da dependência comercial da Hotmart com **Checkout Próprio integrado ao Mercado Pago** (Pix, Cartão, Google Pay, Apple Pay e Boleto) + preparação de infraestrutura Azure na branch `feat/academy-production-hardening`:
 - **Pagamentos próprios e financeiro**: `src/lib/payments/mercadopago.ts`, `POST /api/v1/checkout/create`, `POST /api/webhooks/mercadopago` (assinatura HMAC-SHA256 obrigatória + idempotência + atribuição de comissões por cupom/link + `financial_ledger` append-only), `GET /api/v1/admin/finance/balance` (balanço operacional / DRE com receita bruta, taxas estimadas, estornos, comissões, lucro líquido e margem).

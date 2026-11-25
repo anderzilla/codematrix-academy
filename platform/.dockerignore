@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+.env
+.env.*
+!.env.example
+data/academy.sqlite-wal
+data/academy.sqlite-shm
+data/nosql
+*.log

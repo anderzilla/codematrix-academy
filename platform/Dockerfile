@@ -24,6 +24,10 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/src/lib/schema.sql ./src/lib/schema.sql
+COPY --from=builder --chown=nextjs:nodejs /app/scripts/docker-start.mjs ./scripts/docker-start.mjs
+COPY --from=builder --chown=nextjs:nodejs /app/data/academy.sqlite ./seed-data/academy.sqlite
+
+RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
 
 USER nextjs
 EXPOSE 3100
@@ -31,4 +35,4 @@ EXPOSE 3100
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD wget -qO- http://127.0.0.1:3100/api/health || exit 1
 
-CMD ["node", "server.js"]
+CMD ["node", "scripts/docker-start.mjs"]
