@@ -1,35 +1,57 @@
-/* Tokens oficiais CodeMatrix derivados de design-system/codematrix-public.tokens.json e apple-home.css */
+/* Tokens oficiais — Manual de Identidade Visual CodeMatrix Academy (Light Liquid Glass, sem personagens) */
 :root {
-  --cm-blue: #174ea6;
-  --cm-blue-bright: #2563c7;
-  --cm-blue-tint: #eef4ff;
-  --cm-navy: #071b3d;
-  --cm-navy-card: rgba(255, 255, 255, 0.08);
-  --cm-navy-line: rgba(255, 255, 255, 0.14);
-  --cm-navy-text: #d7e4f8;
-  --cm-sky: #86b4ff;
-  --cm-ink: #101114;
-  --cm-ink-secondary: #27272a;
-  --cm-muted: #52525b;
+  /* Cores-base do manual */
+  --cm-blue: #1846d1;         /* Tinta IA (contraste WCAG AA para texto e botões) */
+  --cm-blue-accent: #1f5eff;  /* Acento primário IA (luzes, gradientes, bordas) */
+  --cm-blue-bright: #1f5eff;
+  --cm-cyan-accent: #22d3ee;  /* Secundária IA (luzes e gradientes suaves) */
+  --cm-blue-tint: rgba(31, 94, 255, 0.1);
+  --cm-navy: #0b1530;         /* Tinta de títulos e blocos de código */
+  --cm-ink: #0f172a;          /* Corpo de texto */
+  --cm-ink-secondary: #1e293b;
+  --cm-muted: #475569;        /* Texto suave (legendas, rótulos) */
   --cm-paper: #ffffff;
-  --cm-soft: #f5f5f7;
-  --cm-line: rgba(0, 0, 0, 0.12);
-  --cm-focus: #68a4ff;
+  --cm-bg: #f3f6ff;           /* Fundo base Light Liquid Glass */
+  --cm-soft: rgba(255, 255, 255, 0.72);
+  --cm-line: rgba(11, 21, 48, 0.1);
+  --cm-glass-border: rgba(255, 255, 255, 0.86);
+  --cm-focus: #1f5eff;
 
-  --cm-success-bg: #ecfdf3;
-  --cm-success-ink: #0f5132;
-  --cm-warn-bg: #fff8eb;
-  --cm-warn-ink: #7c4a03;
-  --cm-neutral-bg: #eceef2;
-  --cm-neutral-ink: #2f3542;
+  /* Cores por trilha (multi-curso; nunca misturar duas trilhas na mesma peça) */
+  --cm-track-ia-accent: #1f5eff;
+  --cm-track-ia-secondary: #22d3ee;
+  --cm-track-ia-ink: #1846d1;
 
+  --cm-track-mkt-accent: #ff3d7f;
+  --cm-track-mkt-secondary: #ff8a3d;
+  --cm-track-mkt-ink: #c81e5b;
+
+  --cm-track-renda-accent: #10b981;
+  --cm-track-renda-secondary: #a3e635;
+  --cm-track-renda-ink: #047857;
+
+  --cm-track-fin-accent: #8b5cf6;
+  --cm-track-fin-secondary: #f5a524;
+  --cm-track-fin-ink: #6d28d9;
+
+  /* Estados semânticos (contraste AA) */
+  --cm-success-bg: #ecfdf5;
+  --cm-success-ink: #047857;
+  --cm-warn-bg: #fffbeb;
+  --cm-warn-ink: #92400e;
+  --cm-neutral-bg: rgba(15, 23, 42, 0.06);
+  --cm-neutral-ink: #334155;
+
+  /* Geometria e vidro */
   --cm-radius-pill: 999px;
   --cm-radius-card: 28px;
-  --cm-radius-panel: 20px;
-  --cm-radius-sm: 12px;
+  --cm-radius-panel: 22px;
+  --cm-radius-sm: 14px;
+  --cm-glass-shadow: 0 18px 44px rgba(11, 21, 48, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.92);
 
   --cm-max-content: 1024px;
   --cm-max-commercial: 1120px;
 
   --cm-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --cm-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }

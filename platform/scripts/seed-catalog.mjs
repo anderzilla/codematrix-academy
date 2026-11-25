@@ -596,6 +596,28 @@ export function runSeed({
       90,
     );
 
+    // 11. Regra versionada inicial de comissão (v1) para Módulo 1 pago (15% sobre líquido após taxa)
+    db.prepare(
+      `INSERT INTO commission_rules (
+         id, rule_key, version, course_id, offer_sku, partner_role, campaign,
+         calc_base, rate_bps, fixed_cents, warranty_days, status
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT(rule_key, version) DO UPDATE SET status = excluded.status`,
+    ).run(
+      'crule_ia_m1_affiliate_v1',
+      'ia-m1-affiliate-default',
+      1,
+      courseId,
+      'CM-IA-M1-PAID',
+      'affiliate',
+      'geral',
+      'net_after_gateway',
+      1500,
+      0,
+      7,
+      'active',
+    );
+
     db.exec('COMMIT');
   } catch (err) {
     db.exec('ROLLBACK');

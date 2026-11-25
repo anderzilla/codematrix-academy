@@ -38,14 +38,15 @@ export default function AcademyHomePage() {
     <>
       <section className="hero-section">
         <div className="container">
-          <p className="eyebrow">CodeMatrix Academy · Formação prática em IA</p>
+          <p className="eyebrow">CodeMatrix Academy · Aprenda fazendo. Use no dia seguinte.</p>
           <h1 className="hero-title">
-            Aprenda Inteligência Artificial na prática, no seu ritmo e com clareza.
+            Aprenda <span className="title-accent">Inteligência Artificial</span> na prática,
+            com entregáveis reais e clareza.
           </h1>
           <p className="hero-subtitle">
-            Cursos em português do Brasil desenhados para profissionais e pequenas e médias
-            empresas que querem entender como a IA funciona, onde ela realmente ajuda e como
-            aplicá-la com responsabilidade — sem jargão desnecessário.
+            Cursos em português do Brasil para profissionais e pequenas e médias empresas.
+            Você sai de cada trilha com um entregável concreto e entende exatamente o que já
+            está disponível hoje e o que está em planejamento.
           </p>
 
           <div className="hero-actions">

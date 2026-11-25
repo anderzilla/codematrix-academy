@@ -12,10 +12,22 @@ body {
   overflow-x: hidden;
   font-family: var(--cm-font-sans);
   color: var(--cm-ink);
-  background: var(--cm-paper);
+  background-color: var(--cm-bg);
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(31, 94, 255, 0.14), transparent 36%),
+    radial-gradient(circle at 88% 12%, rgba(34, 211, 238, 0.14), transparent 34%),
+    linear-gradient(rgba(11, 21, 48, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11, 21, 48, 0.035) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+  background-attachment: fixed;
   line-height: 1.6;
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
+}
+
+code {
+  font-family: var(--cm-font-mono);
+  font-size: 0.92em;
 }
 
 a {
@@ -225,10 +237,10 @@ input:focus-visible {
   opacity: 0.6;
 }
 
-/* Hero & Seções */
+/* Hero & Seções — Light Liquid Glass */
 .hero-section {
   padding: 64px 0 56px;
-  background: var(--cm-paper);
+  background: transparent;
   border-bottom: 1px solid var(--cm-line);
 }
 
@@ -247,7 +259,15 @@ input:focus-visible {
   font-size: clamp(34px, 4.8vw, 56px);
   line-height: 1.07;
   letter-spacing: -0.04em;
-  font-weight: 750;
+  font-weight: 800;
+  color: var(--cm-navy);
+}
+
+.title-accent {
+  background: linear-gradient(135deg, var(--cm-blue-accent), var(--cm-blue) 58%, #0891b2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .hero-subtitle {
@@ -274,17 +294,19 @@ input:focus-visible {
 }
 
 .metric-card {
-  background: var(--cm-soft);
-  border: 1px solid var(--cm-line);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.56));
+  backdrop-filter: blur(22px) saturate(155%);
+  border: 1.5px solid var(--cm-glass-border);
   border-radius: var(--cm-radius-panel);
+  box-shadow: var(--cm-glass-shadow);
   padding: 20px 22px;
 }
 
 .metric-card strong {
   display: block;
-  font-size: 22px;
+  font-size: 21px;
   letter-spacing: -0.025em;
-  color: var(--cm-ink);
+  color: var(--cm-navy);
 }
 
 .metric-card span {
@@ -300,18 +322,23 @@ input:focus-visible {
 }
 
 .section-soft {
-  background: var(--cm-soft);
+  background: rgba(255, 255, 255, 0.34);
   border-top: 1px solid var(--cm-line);
   border-bottom: 1px solid var(--cm-line);
 }
 
+/* Seção de destaque em Light Liquid Glass (sem fundo escuro chapado, conforme Manual) */
 .section-navy {
-  background: var(--cm-navy);
-  color: var(--cm-paper);
+  background:
+    radial-gradient(circle at 18% 20%, rgba(31, 94, 255, 0.14), transparent 44%),
+    radial-gradient(circle at 82% 80%, rgba(34, 211, 238, 0.16), transparent 44%),
+    rgba(243, 246, 255, 0.72);
+  color: var(--cm-navy);
+  border-top: 1px solid var(--cm-line);
 }
 
 .section-navy .eyebrow {
-  color: var(--cm-sky);
+  color: var(--cm-blue);
 }
 
 .section-heading {
@@ -319,6 +346,7 @@ input:focus-visible {
   font-size: clamp(26px, 3.2vw, 38px);
   line-height: 1.15;
   letter-spacing: -0.03em;
+  color: var(--cm-navy);
 }
 
 .section-lead {
@@ -329,10 +357,10 @@ input:focus-visible {
 }
 
 .section-navy .section-lead {
-  color: var(--cm-navy-text);
+  color: var(--cm-muted);
 }
 
-/* Grids & Cards */
+/* Grids & Cards (Receita de vidro do Manual) */
 .grid-2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -346,9 +374,11 @@ input:focus-visible {
 }
 
 .card {
-  background: var(--cm-paper);
-  border: 1px solid var(--cm-line);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.62));
+  backdrop-filter: blur(26px) saturate(160%);
+  border: 1.5px solid var(--cm-glass-border);
   border-radius: var(--cm-radius-card);
+  box-shadow: var(--cm-glass-shadow);
   padding: 28px;
   display: flex;
   flex-direction: column;
@@ -356,14 +386,16 @@ input:focus-visible {
 }
 
 .card-highlight {
-  border-color: rgba(23, 78, 166, 0.35);
-  box-shadow: 0 8px 28px rgba(7, 27, 61, 0.06);
+  border-color: rgba(31, 94, 255, 0.28);
+  box-shadow: 0 22px 48px rgba(24, 70, 209, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.96);
 }
 
 .card-navy {
-  background: var(--cm-navy-card);
-  border: 1px solid var(--cm-navy-line);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.58));
+  backdrop-filter: blur(24px) saturate(160%);
+  border: 1.5px solid var(--cm-glass-border);
   border-radius: var(--cm-radius-panel);
+  box-shadow: var(--cm-glass-shadow);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -374,11 +406,11 @@ input:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--cm-radius-pill);
-  background: rgba(134, 180, 255, 0.18);
-  color: var(--cm-sky);
+  background: linear-gradient(135deg, var(--cm-blue-accent), var(--cm-cyan-accent));
+  color: var(--cm-paper);
   font-size: 13px;
   font-weight: 750;
 }
@@ -386,13 +418,13 @@ input:focus-visible {
 .card-navy h3 {
   margin: 4px 0 2px;
   font-size: 19px;
-  color: var(--cm-paper);
+  color: var(--cm-navy);
   letter-spacing: -0.02em;
 }
 
 .card-navy p {
   margin: 0;
-  color: var(--cm-navy-text);
+  color: var(--cm-muted);
   font-size: 14px;
   line-height: 1.55;
 }

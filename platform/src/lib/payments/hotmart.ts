@@ -5,6 +5,10 @@ import {
   grantEntitlement,
   revokeOrSuspendByTransaction,
 } from '@/lib/entitlements';
+import {
+  attributeHotmartCommission,
+  blockCommissionsByTransaction,
+} from '@/lib/partners';
 
 export const ALLOWED_HOTMART_EVENTS = new Set([
   'PURCHASE_APPROVED',
@@ -59,6 +63,11 @@ export interface NormalizedHotmartEvent {
   offerCode: string | null;
   transactionCode: string;
   buyerEmailHash: string | null;
+  grossCents: number;
+  gatewayFeeCents: number;
+  currency: string;
+  couponCode: string | null;
+  linkCode: string | null;
   sanitizedPayload: Record<string, unknown>;
 }
 
@@ -262,6 +271,26 @@ export function validateAndNormalizeHotmartPayload(
   const buyerEmailHash = buyerEmailRaw ? sha256Hex(buyerEmailRaw) : null;
 
   const priceObj = purchase?.price as Record<string, unknown> | undefined;
+  const originObj = purchase?.origin as Record<string, unknown> | undefined;
+  const currency = typeof priceObj?.currency_value === 'string' ? priceObj.currency_value : 'BRL';
+  const grossCents =
+    typeof priceObj?.value === 'number' && Number.isFinite(priceObj.value)
+      ? Math.max(0, Math.round(priceObj.value * 100))
+      : 0;
+  // Taxa estimada Hotmart (9,9% + R$ 2,49) apenas para base de cálculo quando não vier explícita
+  const gatewayFeeCents =
+    grossCents > 0 ? Math.round(grossCents * 0.099) + 249 : 0;
+
+  const couponCode =
+    typeof purchase?.coupon === 'string' && purchase.coupon.trim()
+      ? purchase.coupon.trim().toUpperCase()
+      : null;
+  const linkCode =
+    typeof originObj?.xcod === 'string' && originObj.xcod.trim()
+      ? originObj.xcod.trim().toLowerCase()
+      : typeof originObj?.sck === 'string' && originObj.sck.trim()
+        ? originObj.sck.trim().toLowerCase()
+        : null;
 
   const sanitizedPayload: Record<string, unknown> = {
     id: providerEventId,
@@ -271,8 +300,10 @@ export function validateAndNormalizeHotmartPayload(
     offer_code: offerCode,
     transaction: transactionCode,
     purchase_status: typeof purchase?.status === 'string' ? purchase.status : null,
-    currency: typeof priceObj?.currency_value === 'string' ? priceObj.currency_value : null,
+    currency,
     value: typeof priceObj?.value === 'number' ? priceObj.value : null,
+    coupon: couponCode,
+    tracking_code: linkCode,
     buyer_email_hash: buyerEmailHash,
   };
 
@@ -285,6 +316,11 @@ export function validateAndNormalizeHotmartPayload(
       offerCode,
       transactionCode,
       buyerEmailHash,
+      grossCents,
+      gatewayFeeCents,
+      currency,
+      couponCode,
+      linkCode,
       sanitizedPayload,
     },
   };
@@ -378,6 +414,19 @@ export function recordHotmartWebhookEvent(
         });
         entitlementGranted = true;
         entitlementStatus = 'granted';
+
+        attributeHotmartCommission(db, {
+          courseId: offerMatch.course_id,
+          offerSku: offerMatch.sku,
+          transactionCode: normalized.transactionCode,
+          sourceEventId: normalized.providerEventId,
+          grossCents: normalized.grossCents,
+          gatewayFeeCents: normalized.gatewayFeeCents,
+          currency: normalized.currency,
+          buyerEmailHash: normalized.buyerEmailHash,
+          couponCode: normalized.couponCode,
+          linkCode: normalized.linkCode,
+        });
       } else {
         entitlementStatus = 'unmapped_sku';
         processingStatus = 'ignored';
@@ -388,6 +437,11 @@ export function recordHotmartWebhookEvent(
         eventType: normalized.eventType,
         sourceEventId: normalized.providerEventId,
         env,
+      });
+      blockCommissionsByTransaction(db, {
+        transactionCode: normalized.transactionCode,
+        eventType: normalized.eventType,
+        sourceEventId: normalized.providerEventId,
       });
       entitlementStatus =
         revoked.updatedCount > 0 ? revoked.targetStatus : 'no_active_entitlement';

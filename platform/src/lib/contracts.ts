@@ -68,7 +68,7 @@ export const ACADEMY_SURFACES: SurfaceContract[] = [
     name: 'Painel de Parceiros',
     basePath: '/partners',
     stage: 3,
-    status: 'reserved_stage_3',
+    status: 'active',
     requiresAuth: true,
     requiresMfa: false,
     allowedRoles: ['instructor', 'affiliate', 'seller', 'partner', 'admin'],
