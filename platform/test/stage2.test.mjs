@@ -164,6 +164,30 @@ test('Etapa 2 ponta a ponta: auth, IDOR, amostra gratuita, Hotmart entitlement +
     );
     assert.equal(allowedA01.status, 200);
 
+    // Anotação "Pare e Anote" no store NoSQL (Etapa 2): salva e lê para A01, bloqueia 403 para A04
+    const saveNote = await fetch(
+      `${baseUrl}/api/v1/app/courses/formacao-ia-anderzilla/lessons/A01/notes`,
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', cookie: cookieHeader },
+        body: JSON.stringify({ slideIndex: 0, text: 'IA é técnica computacional, não consciência.' }),
+      },
+    );
+    assert.equal(saveNote.status, 200);
+    const readNotes = await fetch(
+      `${baseUrl}/api/v1/app/courses/formacao-ia-anderzilla/lessons/A01/notes`,
+      { headers: { cookie: cookieHeader } },
+    );
+    assert.equal(readNotes.status, 200);
+    const notesJson = await readNotes.json();
+    assert.equal(notesJson.notes[0], 'IA é técnica computacional, não consciência.');
+
+    const deniedNoteA04 = await fetch(
+      `${baseUrl}/api/v1/app/courses/formacao-ia-anderzilla/lessons/A04/notes`,
+      { headers: { cookie: cookieHeader } },
+    );
+    assert.equal(deniedNoteA04.status, 403);
+
     const stillDeniedA04 = await fetch(
       `${baseUrl}/api/v1/app/courses/formacao-ia-anderzilla/lessons/A04`,
       { headers: { cookie: cookieHeader } },

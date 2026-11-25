@@ -531,9 +531,11 @@ input:focus-visible {
 }
 
 .step-card {
-  background: var(--cm-paper);
-  border: 1px solid var(--cm-line);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.6));
+  backdrop-filter: blur(22px) saturate(155%);
+  border: 1.5px solid var(--cm-glass-border);
   border-radius: var(--cm-radius-panel);
+  box-shadow: var(--cm-glass-shadow);
   padding: 22px;
 }
 
@@ -541,13 +543,13 @@ input:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: var(--cm-radius-pill);
-  background: var(--cm-blue);
+  background: linear-gradient(135deg, var(--cm-blue-accent), var(--cm-cyan-accent));
   color: var(--cm-paper);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 750;
   margin-bottom: 12px;
 }
 
@@ -598,9 +600,11 @@ input:focus-visible {
 }
 
 .block-card {
-  background: var(--cm-soft);
-  border: 1px solid var(--cm-line);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.58));
+  backdrop-filter: blur(20px) saturate(155%);
+  border: 1.5px solid var(--cm-glass-border);
   border-radius: var(--cm-radius-panel);
+  box-shadow: var(--cm-glass-shadow);
   padding: 22px;
   display: flex;
   flex-direction: column;
@@ -689,7 +693,8 @@ input:focus-visible {
 
 /* Footer */
 .academy-footer {
-  background: var(--cm-soft);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(150%);
   border-top: 1px solid var(--cm-line);
   padding: 36px 0;
   font-size: 13px;
@@ -866,9 +871,11 @@ input:focus-visible {
 }
 
 .slide-deck {
-  background: var(--cm-paper);
-  border: 1px solid var(--cm-line);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.66));
+  backdrop-filter: blur(26px) saturate(160%);
+  border: 1.5px solid var(--cm-glass-border);
   border-radius: var(--cm-radius-card);
+  box-shadow: var(--cm-glass-shadow);
   padding: 32px;
   display: flex;
   flex-direction: column;
@@ -876,17 +883,18 @@ input:focus-visible {
 }
 
 .slide-visual {
-  background: var(--cm-navy);
-  color: var(--cm-paper);
+  background: linear-gradient(135deg, rgba(31, 94, 255, 0.1), rgba(34, 211, 238, 0.14));
+  color: var(--cm-navy);
+  border: 1.5px solid rgba(31, 94, 255, 0.24);
   border-radius: var(--cm-radius-sm);
   padding: 16px 20px;
-  font-weight: 650;
+  font-weight: 700;
   font-size: 15px;
   letter-spacing: 0.01em;
 }
 
 .slide-box {
-  background: var(--cm-soft);
+  background: rgba(255, 255, 255, 0.72);
   border: 1px solid var(--cm-line);
   border-radius: var(--cm-radius-sm);
   padding: 16px 18px;
@@ -904,9 +912,11 @@ input:focus-visible {
 }
 
 .video-shell {
-  background: var(--cm-soft);
-  border: 1px solid var(--cm-line);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.58));
+  backdrop-filter: blur(22px) saturate(155%);
+  border: 1.5px solid var(--cm-glass-border);
   border-radius: var(--cm-radius-panel);
+  box-shadow: var(--cm-glass-shadow);
   padding: 22px;
   display: flex;
   flex-direction: column;
@@ -918,15 +928,17 @@ input:focus-visible {
   aspect-ratio: 16 / 9;
   border: 0;
   border-radius: var(--cm-radius-sm);
-  background: #000;
+  background: var(--cm-navy);
 }
 
 .quiz-fieldset {
-  border: 1px solid var(--cm-line);
+  border: 1.5px solid var(--cm-glass-border);
   border-radius: var(--cm-radius-panel);
   padding: 20px 22px;
   margin: 0;
-  background: var(--cm-paper);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.64));
+  backdrop-filter: blur(22px) saturate(155%);
+  box-shadow: var(--cm-glass-shadow);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -935,6 +947,7 @@ input:focus-visible {
 .quiz-fieldset legend {
   font-weight: 700;
   font-size: 16px;
+  color: var(--cm-navy);
   padding: 0 6px;
 }
 
@@ -945,18 +958,21 @@ input:focus-visible {
   padding: 12px 14px;
   border: 1px solid var(--cm-line);
   border-radius: var(--cm-radius-sm);
+  background: rgba(255, 255, 255, 0.72);
   cursor: pointer;
   font-size: 15px;
 }
 
 .quiz-option:hover {
-  background: var(--cm-soft);
+  background: rgba(31, 94, 255, 0.06);
 }
 
 .cert-card {
-  background: var(--cm-paper);
-  border: 2px solid var(--cm-blue);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.7));
+  backdrop-filter: blur(26px) saturate(160%);
+  border: 2px solid rgba(31, 94, 255, 0.35);
   border-radius: var(--cm-radius-card);
+  box-shadow: var(--cm-glass-shadow);
   padding: 36px;
   display: flex;
   flex-direction: column;

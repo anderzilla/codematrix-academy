@@ -195,3 +195,196 @@ CREATE TABLE IF NOT EXISTS audit_events (
 -- ALTER TABLE commission_entries ENABLE ROW LEVEL SECURITY;
 -- CREATE POLICY partner_own_commissions ON commission_entries
 --   USING (partner_id = current_setting('app.current_partner_id', true));
+
+
+-- ============================================================================
+-- Tabelas adicionais das Etapas 1 e 2 (paridade completa no PostgreSQL 16)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS course_versions (
+  id TEXT PRIMARY KEY,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  version_tag TEXT NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('draft', 'published', 'archived')),
+  source_ref TEXT NOT NULL DEFAULT '',
+  notes TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (course_id, version_tag)
+);
+
+CREATE TABLE IF NOT EXISTS modules (
+  id TEXT PRIMARY KEY,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  version_id TEXT NOT NULL REFERENCES course_versions(id) ON DELETE CASCADE,
+  position INTEGER NOT NULL,
+  code TEXT NOT NULL,
+  title TEXT NOT NULL,
+  promise TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL CHECK (status IN ('draft', 'planned', 'published')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (course_id, code),
+  UNIQUE (course_id, position)
+);
+
+CREATE TABLE IF NOT EXISTS blocks (
+  id TEXT PRIMARY KEY,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  module_id TEXT NOT NULL REFERENCES modules(id) ON DELETE CASCADE,
+  position INTEGER NOT NULL,
+  code TEXT NOT NULL,
+  title TEXT NOT NULL,
+  focus TEXT NOT NULL DEFAULT '',
+  remediate TEXT NOT NULL DEFAULT '',
+  min_pass_percent INTEGER NOT NULL DEFAULT 70,
+  is_free_sample BOOLEAN NOT NULL DEFAULT FALSE,
+  status TEXT NOT NULL CHECK (status IN ('draft', 'planned', 'published')),
+  UNIQUE (course_id, code),
+  UNIQUE (module_id, position)
+);
+
+CREATE TABLE IF NOT EXISTS lessons (
+  id TEXT PRIMARY KEY,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  module_id TEXT NOT NULL REFERENCES modules(id) ON DELETE CASCADE,
+  block_id TEXT NOT NULL REFERENCES blocks(id) ON DELETE CASCADE,
+  position INTEGER NOT NULL,
+  code TEXT NOT NULL,
+  title TEXT NOT NULL,
+  goal TEXT NOT NULL DEFAULT '',
+  slides_count INTEGER NOT NULL DEFAULT 0,
+  content_json JSONB NOT NULL DEFAULT '[]'::jsonb,
+  status TEXT NOT NULL CHECK (status IN ('draft', 'planned', 'published')),
+  UNIQUE (course_id, code),
+  UNIQUE (course_id, position)
+);
+
+CREATE TABLE IF NOT EXISTS assets (
+  id TEXT PRIMARY KEY,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  module_id TEXT REFERENCES modules(id) ON DELETE CASCADE,
+  lesson_id TEXT REFERENCES lessons(id) ON DELETE CASCADE,
+  code TEXT NOT NULL,
+  kind TEXT NOT NULL,
+  title TEXT NOT NULL,
+  storage_ref TEXT NOT NULL DEFAULT '',
+  stream_uid TEXT,
+  status TEXT NOT NULL,
+  metadata_json JSONB NOT NULL DEFAULT '{}'::jsonb,
+  UNIQUE (course_id, code)
+);
+
+CREATE TABLE IF NOT EXISTS quiz_questions (
+  id TEXT PRIMARY KEY,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  block_id TEXT NOT NULL REFERENCES blocks(id) ON DELETE CASCADE,
+  question_code TEXT NOT NULL,
+  lesson_position INTEGER NOT NULL,
+  question TEXT NOT NULL,
+  options_json JSONB NOT NULL,
+  correct_index INTEGER NOT NULL,
+  skill TEXT NOT NULL DEFAULT '',
+  explanation TEXT NOT NULL DEFAULT '',
+  version_tag TEXT NOT NULL DEFAULT 'v1',
+  UNIQUE (course_id, question_code)
+);
+
+CREATE TABLE IF NOT EXISTS cms_pages (
+  slug TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  subtitle TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL CHECK (status IN ('draft', 'published')),
+  review_notice TEXT NOT NULL DEFAULT '',
+  sections_json JSONB NOT NULL DEFAULT '[]'::jsonb,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS user_roles (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role TEXT NOT NULL,
+  course_id TEXT REFERENCES courses(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (user_id, role, course_id)
+);
+
+CREATE TABLE IF NOT EXISTS sessions (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL UNIQUE,
+  expires_at TIMESTAMPTZ NOT NULL,
+  revoked_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS auth_tokens (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  purpose TEXT NOT NULL CHECK (purpose IN ('verify_email', 'reset_password')),
+  token_hash TEXT NOT NULL UNIQUE,
+  expires_at TIMESTAMPTZ NOT NULL,
+  used_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS lesson_progress (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  lesson_id TEXT NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+  completed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  reviewed_at TIMESTAMPTZ,
+  UNIQUE (user_id, lesson_id)
+);
+
+CREATE TABLE IF NOT EXISTS quiz_attempts (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  block_id TEXT NOT NULL REFERENCES blocks(id) ON DELETE CASCADE,
+  version_tag TEXT NOT NULL DEFAULT 'v1.0-m1',
+  status TEXT NOT NULL CHECK (status IN ('in_progress', 'submitted')),
+  questions_snapshot_json JSONB NOT NULL,
+  answers_json JSONB,
+  score_percent INTEGER,
+  correct_count INTEGER,
+  total_count INTEGER NOT NULL DEFAULT 10,
+  passed BOOLEAN NOT NULL DEFAULT FALSE,
+  started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  submitted_at TIMESTAMPTZ
+);
+
+CREATE TABLE IF NOT EXISTS live_events (
+  id TEXT PRIMARY KEY,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  module_id TEXT REFERENCES modules(id) ON DELETE SET NULL,
+  code TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  scheduled_at TIMESTAMPTZ NOT NULL,
+  duration_minutes INTEGER NOT NULL DEFAULT 60,
+  status TEXT NOT NULL,
+  access_scope TEXT NOT NULL,
+  live_input_uid TEXT,
+  replay_stream_uid TEXT,
+  retention_days INTEGER NOT NULL DEFAULT 90,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (course_id, code)
+);
+
+CREATE TABLE IF NOT EXISTS certificates (
+  id TEXT PRIMARY KEY,
+  verification_code TEXT NOT NULL UNIQUE,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  student_display_name TEXT NOT NULL,
+  course_title TEXT NOT NULL,
+  scope_label TEXT NOT NULL,
+  workload_hours INTEGER NOT NULL DEFAULT 15,
+  status TEXT NOT NULL CHECK (status IN ('valid', 'revoked')),
+  revocation_reason TEXT,
+  template_notice TEXT NOT NULL,
+  issued_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  revoked_at TIMESTAMPTZ,
+  UNIQUE (user_id, course_id, scope_label)
+);

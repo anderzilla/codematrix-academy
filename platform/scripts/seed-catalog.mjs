@@ -631,6 +631,35 @@ export function runSeed({
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2), 'utf8');
   }
 
+  // Sincroniza snapshot documental do catálogo no store NoSQL local (compatível com Cosmos DB)
+  const nosqlDir = process.env.ACADEMY_NOSQL_LOCAL_DIR?.trim() || path.resolve(process.cwd(), 'data', 'nosql');
+  const contentDir = path.join(nosqlDir, 'content_documents');
+  fs.mkdirSync(contentDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(contentDir, 'tenant_codematrix.json'),
+    JSON.stringify(
+      [
+        {
+          id: 'catalog_snapshot:formacao-ia-anderzilla',
+          partitionKey: 'tenant_codematrix',
+          kind: 'course_catalog_snapshot',
+          payload: {
+            slug: 'formacao-ia-anderzilla',
+            title: `Formação IA — ${formacao.title}`,
+            modulesAvailable: 1,
+            modulesPlanned: 2,
+            lessonsPublished: report.migrated.lessonsPublished,
+            slidesImported: report.migrated.slidesImported,
+          },
+          updatedAt: new Date().toISOString(),
+        },
+      ],
+      null,
+      2,
+    ),
+    'utf8',
+  );
+
   return report;
 }
 

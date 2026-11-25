@@ -5,8 +5,10 @@
 O site corporativo (`CodeMatrix-Agency/site/codematrix-corporate-live`) já padroniza **Next.js 16 + React 19 + TypeScript 5.9 + ESLint 9 + Node >= 22.13**. A plataforma web da CodeMatrix Academy adota a mesma stack em `platform/` dentro do repositório dedicado `anderzilla/codematrix-academy`, preservando tanto a fábrica de cursos Python (`rendaextra/`) quanto o isolamento do site corporativo:
 
 1. **Isolamento total do site público (`www.codematrix.com.br`):** o site corporativo não é migrado para a Academy e continua sem acesso ao banco, webhooks ou sessões da Academy.
-2. **Persistência estruturada nativa (`node:sqlite`):** utiliza `DatabaseSync` nativo do Node.js >= 22.13/24, com consultas 100% parametrizadas e sem dependências nativas externas no Windows/Linux. O contrato de repositório em `src/lib/catalog.ts` e `src/lib/payments/hotmart.ts` permite migrar para PostgreSQL/Cloud SQL em produção mantendo o mesmo modelo relacional.
-3. **Multi-curso desde o primeiro commit:** todas as tabelas de catálogo, ofertas, cupons e eventos de pagamento referenciam `course_id` (e `tenant_id`), permitindo cadastrar novos cursos sem alterar o schema.
+2. **Persistência híbrida Azure (PostgreSQL + NoSQL):**
+   - **Relacional transacional (`ACADEMY_SQL_DRIVER=postgres|sqlite`):** DDL completo PostgreSQL 16 em [db/postgres/schema.sql](../db/postgres/schema.sql) para **Azure Database for PostgreSQL Flexible Server** (ACID, TLS `verify-full`, RLS e PITR), mantendo `node:sqlite` como fallback local de desenvolvimento e testes sem dependência externa.
+   - **NoSQL documental (`ACADEMY_NOSQL_DRIVER=cosmos|local`):** adapter em [src/lib/persistence/nosql.ts](../src/lib/persistence/nosql.ts) para **Azure Cosmos DB for NoSQL** (snapshots de catálogo/slides na Etapa 1 e anotações *"Pare e Anote"* do aluno na Etapa 2), com store documental local em desenvolvimento. Detalhes completos em [AZURE-DATA-ARCHITECTURE.md](AZURE-DATA-ARCHITECTURE.md).
+3. **Identidade visual Light Liquid Glass (sem personagens):** alinhada ao Manual da Marca CodeMatrix Academy ([VISUAL-TOKENS.md](VISUAL-TOKENS.md)), com fundo `#F3F6FF`, painéis de vidro translúcido, texto colorido na coluna Tinta AA (`#1846D1`), sem fundo escuro chapado e sem personagens.
 4. **Backend como autoridade:** gabaritos de quizzes (`quiz_questions.correct_index`), regras de acesso, validação de webhooks e emissão futura de tokens Cloudflare Stream nunca ficam no bundle do navegador.
 
 ## Diagrama das quatro superfícies e integrações

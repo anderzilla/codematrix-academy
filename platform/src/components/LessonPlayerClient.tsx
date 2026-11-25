@@ -46,9 +46,45 @@ export function LessonPlayerClient({
   const [completing, setCompleting] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [videoState, setVideoState] = useState<VideoState>({ kind: 'idle' });
+  const [notes, setNotes] = useState<Record<number, string>>({});
+  const [noteStatus, setNoteStatus] = useState<string | null>(null);
 
   const slides = lesson.slides;
   const currentSlide = slides[slideIdx];
+
+  useEffect(() => {
+    let active = true;
+    fetch(`/api/v1/app/courses/${courseSlug}/lessons/${lesson.code}/notes`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { ok?: boolean; notes?: Record<number, string> } | null) => {
+        if (active && data?.ok && data.notes) {
+          setNotes(data.notes);
+        }
+      })
+      .catch(() => {
+        // ignora erro silencioso de leitura inicial
+      });
+    return () => {
+      active = false;
+    };
+  }, [courseSlug, lesson.code]);
+
+  async function handleSaveNote() {
+    setNoteStatus('Salvando anotação...');
+    try {
+      const res = await fetch(
+        `/api/v1/app/courses/${courseSlug}/lessons/${lesson.code}/notes`,
+        {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ slideIndex: slideIdx, text: notes[slideIdx] || '' }),
+        },
+      );
+      setNoteStatus(res.ok ? 'Anotação salva na sua conta.' : 'Não foi possível salvar a anotação.');
+    } catch {
+      setNoteStatus('Erro de rede ao salvar a anotação.');
+    }
+  }
 
   const loadVideoToken = useCallback(async () => {
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
@@ -243,8 +279,38 @@ export function LessonPlayerClient({
           ) : null}
 
           {currentSlide.pause ? (
-            <div className="info-box">
-              <strong>Pausa de fixação:</strong> {currentSlide.pause}
+            <div className="info-box form-stack" style={{ gap: 10 }}>
+              <div>
+                <strong>Pare e Anote:</strong> {currentSlide.pause}
+              </div>
+              <label htmlFor={`note-slide-${slideIdx}`} className="skip-link">
+                Sua anotação para esta tela
+              </label>
+              <textarea
+                id={`note-slide-${slideIdx}`}
+                rows={3}
+                className="field-input"
+                value={notes[slideIdx] || ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setNotes((prev) => ({ ...prev, [slideIdx]: value }));
+                }}
+                placeholder="Escreva sua resposta, exemplo próprio ou dúvida sobre esta tela..."
+              />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="pill-btn pill-btn-sm pill-btn-secondary"
+                  onClick={handleSaveNote}
+                >
+                  Salvar anotação
+                </button>
+                {noteStatus ? (
+                  <span className="meta-ref" style={{ margin: 0 }} aria-live="polite">
+                    {noteStatus}
+                  </span>
+                ) : null}
+              </div>
             </div>
           ) : null}
 
