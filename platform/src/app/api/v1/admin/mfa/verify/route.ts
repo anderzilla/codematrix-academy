@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireAdminSession, verifyAdminStepUpMfa } from '@/lib/admin-auth';
+import { checkRateLimit } from '@/lib/auth';
 import { getDb } from '@/lib/db';
 
 export async function POST(request: Request) {
@@ -8,6 +9,13 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { ok: false, code: auth.code, error: auth.error },
       { status: auth.status },
+    );
+  }
+
+  if (!checkRateLimit(`admin-mfa:${auth.user.id}`, 8, 60_000)) {
+    return NextResponse.json(
+      { ok: false, error: 'Muitas tentativas de MFA. Aguarde um minuto.' },
+      { status: 429 },
     );
   }
 

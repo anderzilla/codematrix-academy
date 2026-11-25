@@ -233,6 +233,7 @@ export function runSeed({
       const modPos = Number(mod.id);
       const isAvailable = modPos === 1;
       const modId = `mod_formacao_ia_${modPos}`;
+      const cleanPromise = String(mod.promise || '').replace(/^Prompt pronto:\s*/i, '');
       upsertModule.run(
         modId,
         courseId,
@@ -240,7 +241,7 @@ export function runSeed({
         modPos,
         `M${modPos}`,
         mod.title,
-        mod.promise,
+        cleanPromise,
         isAvailable ? 'published' : 'planned',
       );
       if (isAvailable) report.migrated.modulesPublished += 1;

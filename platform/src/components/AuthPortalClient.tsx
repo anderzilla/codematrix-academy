@@ -360,9 +360,34 @@ export function AuthPortalClient() {
               placeholder="Cole o código recebido"
             />
           </div>
-          <button type="submit" className="pill-btn" disabled={loading}>
-            {loading ? 'Validando...' : 'Confirmar meu e-mail'}
-          </button>
+          <div className="hero-actions" style={{ marginTop: 0 }}>
+            <button type="submit" className="pill-btn" disabled={loading}>
+              {loading ? 'Validando...' : 'Confirmar meu e-mail'}
+            </button>
+            <button
+              type="button"
+              className="pill-btn pill-btn-secondary"
+              disabled={loading || !email}
+              onClick={async () => {
+                setLoading(true);
+                setErrorMsg(null);
+                try {
+                  const res = await fetch('/api/v1/auth/resend-verification', {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json' },
+                    body: JSON.stringify({ email }),
+                  });
+                  const d = (await res.json()) as { message?: string };
+                  setSuccessMsg(d.message || 'Novo código enviado.');
+                  await loadDevMailbox(email);
+                } finally {
+                  setLoading(false);
+                }
+              }}
+            >
+              Reenviar código
+            </button>
+          </div>
         </form>
       ) : null}
 

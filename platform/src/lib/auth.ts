@@ -3,6 +3,9 @@ import { cookies } from 'next/headers';
 import type { DatabaseSync } from 'node:sqlite';
 import { getDb } from '@/lib/db';
 import { claimPendingEntitlementsForUser } from '@/lib/entitlements';
+import { dispatchTransactionalEmail, isDevMailboxEnabled } from '@/lib/mailer';
+
+export { isDevMailboxEnabled };
 
 export const SESSION_COOKIE_NAME =
   process.env.ACADEMY_SESSION_COOKIE_NAME?.trim() || 'cm_academy_session';
@@ -26,12 +29,6 @@ export function checkRateLimit(key: string, maxRequests = 15, windowMs = 60_000)
   }
   entry.count += 1;
   return true;
-}
-
-export function isDevMailboxEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
-  if (env.ACADEMY_DEV_MAILBOX === '1') return true;
-  if (env.ACADEMY_DEV_MAILBOX === '0') return false;
-  return env.NODE_ENV !== 'production';
 }
 
 export function normalizeEmail(email: string): string {
@@ -80,20 +77,35 @@ function recordDevEmail(
     actionPath: string;
   },
 ): void {
-  if (!isDevMailboxEnabled()) return;
-  const baseUrl = (process.env.ACADEMY_PUBLIC_URL || 'http://127.0.0.1:3100').replace(/\/+$/, '');
-  const id = `mail_${crypto.randomUUID().replace(/-/g, '')}`;
-  db.prepare(
-    `INSERT INTO dev_mailbox (id, recipient_email, purpose, subject, token_preview, action_url)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-  ).run(
-    id,
-    input.recipientEmail,
-    input.purpose,
-    input.subject,
-    input.token,
-    `${baseUrl}${input.actionPath}`,
-  );
+  dispatchTransactionalEmail(db, {
+    to: input.recipientEmail,
+    purpose: input.purpose,
+    subject: input.subject,
+    token: input.token,
+    actionPath: input.actionPath,
+  });
+}
+
+export function resendVerificationEmail(db: DatabaseSync, rawEmail: string): void {
+  const email = normalizeEmail(rawEmail);
+  const user = db
+    .prepare(`SELECT id, email, email_verified_at, status FROM users WHERE email = ?`)
+    .get(email) as
+    | { id: string; email: string; email_verified_at: string | null; status: string }
+    | undefined;
+
+  if (!user || user.status !== 'active' || user.email_verified_at) {
+    return;
+  }
+
+  const token = createAuthToken(db, user.id, 'verify_email', VERIFY_TOKEN_TTL_MINUTES);
+  recordDevEmail(db, {
+    recipientEmail: user.email,
+    purpose: 'verify_email',
+    subject: 'Reenvio — Confirme seu e-mail na CodeMatrix Academy',
+    token,
+    actionPath: `/entrar?modo=verificar&token=${encodeURIComponent(token)}`,
+  });
 }
 
 function createAuthToken(

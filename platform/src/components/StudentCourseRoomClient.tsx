@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { WaitlistFormClient } from '@/components/WaitlistFormClient';
 import type { StudentCourseRoom } from '@/lib/student';
 
 export function StudentCourseRoomClient({ room }: { room: StudentCourseRoom }) {
@@ -119,9 +120,19 @@ export function StudentCourseRoomClient({ room }: { room: StudentCourseRoom }) {
 
                   {!block.unlocked ? (
                     <div className="notice-box" role="note">
-                      {block.lockReason === 'no_entitlement'
-                        ? 'Este bloco faz parte do Módulo 1 pago. Assim que sua compra for confirmada, ele será liberado automaticamente.'
-                        : 'Conclua o quiz do bloco anterior com pelo menos 70% de acerto para desbloquear estas aulas.'}
+                      {block.lockReason === 'no_entitlement' ? (
+                        <>
+                          <strong>Conteúdo do Módulo 1 completo:</strong> conclua o Bloco 1 gratuito
+                          e garanta acesso aos Blocos 2 a 5 e ao certificado.
+                          <div style={{ marginTop: 8 }}>
+                            <Link href={`/cursos/${room.slug}`} className="inline-link">
+                              Ver opções de inscrição do Módulo 1 →
+                            </Link>
+                          </div>
+                        </>
+                      ) : (
+                        'Conclua o quiz do bloco anterior com pelo menos 70% de acerto para desbloquear estas aulas.'
+                      )}
                     </div>
                   ) : null}
 
@@ -169,7 +180,13 @@ export function StudentCourseRoomClient({ room }: { room: StudentCourseRoom }) {
             </div>
           ) : (
             <div className="notice-box" role="note">
-              Módulo em produção — ainda não liberado para estudo.
+              <strong>Módulo {mod.position} em produção:</strong> quer ser avisado assim que a
+              inscrição abrir para quem concluiu o Módulo 1?
+              <WaitlistFormClient
+                courseId={room.courseId}
+                targetScope={`module:${mod.code}`}
+                label={`Avise-me sobre o Módulo ${mod.position}`}
+              />
             </div>
           )}
         </section>

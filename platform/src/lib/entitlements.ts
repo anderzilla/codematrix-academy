@@ -8,7 +8,7 @@ export interface EntitlementRecord {
   courseId: string;
   offerSku: string;
   accessScope: string;
-  sourceProvider: 'free_sample' | 'hotmart' | 'manual';
+  sourceProvider: 'free_sample' | 'mercadopago' | 'hotmart' | 'manual';
   sourceEventId: string | null;
   transactionCode: string | null;
   status: 'active' | 'suspended' | 'revoked' | 'expired';
@@ -31,7 +31,12 @@ export function scopeGrantsBlock(
 }
 
 export function scopeGrantsCourse(accessScope: string, courseSlug: string): boolean {
-  return accessScope.trim().startsWith(`course:${courseSlug}:`);
+  const normalized = accessScope.trim();
+  // Nunca concede acesso geral do curso (ex.: lives/replays pagos) para amostra gratuita de bloco único
+  return (
+    normalized === `course:${courseSlug}:full` ||
+    normalized.startsWith(`course:${courseSlug}:module:`)
+  );
 }
 
 function appendHistory(
@@ -66,7 +71,7 @@ export function grantEntitlement(
     courseId: string;
     offerSku: string;
     accessScope: string;
-    sourceProvider: 'free_sample' | 'hotmart' | 'manual';
+    sourceProvider: 'free_sample' | 'mercadopago' | 'hotmart' | 'manual';
     sourceEventId?: string | null;
     transactionCode?: string | null;
     reason: string;

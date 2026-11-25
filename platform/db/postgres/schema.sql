@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS entitlements (
   course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
   offer_sku TEXT NOT NULL,
   access_scope TEXT NOT NULL,
-  source_provider TEXT NOT NULL CHECK (source_provider IN ('free_sample', 'hotmart', 'manual')),
+  source_provider TEXT NOT NULL CHECK (source_provider IN ('free_sample', 'mercadopago', 'hotmart', 'manual')),
   source_event_id TEXT,
   transaction_code TEXT,
   status TEXT NOT NULL CHECK (status IN ('active', 'suspended', 'revoked', 'expired')),
@@ -434,4 +434,42 @@ CREATE TABLE IF NOT EXISTS lgpd_requests (
   reviewed_by TEXT,
   reviewed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+
+-- ============================================================================
+-- Checkout Próprio (Mercado Pago), Pedidos Internos e Lista de Espera (PG 16)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS orders (
+  id TEXT PRIMARY KEY,
+  order_code TEXT NOT NULL UNIQUE,
+  user_id TEXT REFERENCES users(id) ON DELETE SET NULL,
+  buyer_email_hash TEXT NOT NULL,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE RESTRICT,
+  offer_sku TEXT NOT NULL,
+  gross_cents INTEGER NOT NULL DEFAULT 0,
+  discount_cents INTEGER NOT NULL DEFAULT 0,
+  net_payable_cents INTEGER NOT NULL DEFAULT 0,
+  currency TEXT NOT NULL DEFAULT 'BRL',
+  payment_method TEXT NOT NULL,
+  provider TEXT NOT NULL DEFAULT 'mercadopago',
+  provider_payment_id TEXT,
+  status TEXT NOT NULL DEFAULT 'pending',
+  coupon_code TEXT,
+  partner_link_code TEXT,
+  checkout_url TEXT,
+  pix_copy_paste TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS waitlist_leads (
+  id TEXT PRIMARY KEY,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  target_scope TEXT NOT NULL,
+  email TEXT NOT NULL,
+  name TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (course_id, target_scope, email)
 );

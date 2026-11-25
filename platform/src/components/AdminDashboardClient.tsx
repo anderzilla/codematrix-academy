@@ -103,6 +103,38 @@ export function AdminDashboardClient({
   const [periodLabel, setPeriodLabel] = useState('2026-11');
   const [revokeCode, setRevokeCode] = useState('');
   const [revokeReason, setRevokeReason] = useState('');
+  const [newCourseTitle, setNewCourseTitle] = useState('');
+  const [newCoursePrice, setNewCoursePrice] = useState('197');
+  const [newCourseStatus, setNewCourseStatus] = useState<'draft' | 'published'>('draft');
+
+  async function handleCreateCourse(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setFeedback(null);
+    setErrorMsg(null);
+    try {
+      const priceCents = Math.round((Number(newCoursePrice) || 0) * 100);
+      const res = await fetch('/api/v1/admin/courses', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          title: newCourseTitle,
+          status: newCourseStatus,
+          offerPriceCents: priceCents > 0 ? priceCents : undefined,
+        }),
+      });
+      const json = (await res.json()) as { ok?: boolean; error?: string; slug?: string };
+      if (!res.ok || !json.ok) {
+        setErrorMsg(json.error || 'Não foi possível criar o curso.');
+        return;
+      }
+      setNewCourseTitle('');
+      setFeedback(`Curso "${json.slug}" criado com sucesso!`);
+      router.refresh();
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function handleVerifyMfa(e: React.FormEvent) {
     e.preventDefault();
@@ -325,32 +357,80 @@ export function AdminDashboardClient({
       ) : null}
 
       {tab === 'courses' ? (
-        <section className="card">
-          <h2 style={{ margin: 0, fontSize: 22 }}>Catálogo multi-curso e alertas de completude</h2>
-          <div className="module-stack">
-            {overview.courses.map((c) => (
-              <article key={c.id} className="block-card">
-                <div className="badge-row">
-                  <span className={`badge ${c.status === 'published' ? 'badge-available' : 'badge-planned'}`}>
-                    {c.status}
-                  </span>
-                  <span className="badge badge-neutral">
-                    {c.published_modules} módulo(s) publicado(s) · {c.planned_modules} planejado(s)
-                  </span>
-                  <span className="badge badge-neutral">
-                    {c.pending_stream_videos} vídeo(s) Stream pendente(s)
-                  </span>
-                </div>
-                <h4>{c.title}</h4>
-                <div className="card-actions">
-                  <Link href={`/app/cursos/${c.slug}`} className="pill-btn pill-btn-sm pill-btn-secondary">
-                    Pré-visualizar como aluno
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
+        <div className="module-stack">
+          <form onSubmit={handleCreateCourse} className="card form-stack">
+            <h2 style={{ margin: 0, fontSize: 20 }}>Cadastrar novo curso e oferta própria</h2>
+            <div className="grid-2">
+              <div className="field-group">
+                <label htmlFor="new-course-title">Título do curso</label>
+                <input
+                  id="new-course-title"
+                  required
+                  className="field-input"
+                  value={newCourseTitle}
+                  onChange={(e) => setNewCourseTitle(e.target.value)}
+                  placeholder="Ex.: Automação com IA para PMEs"
+                />
+              </div>
+              <div className="field-group">
+                <label htmlFor="new-course-price">Preço da oferta (R$)</label>
+                <input
+                  id="new-course-price"
+                  type="number"
+                  min={0}
+                  step="1"
+                  className="field-input"
+                  value={newCoursePrice}
+                  onChange={(e) => setNewCoursePrice(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="field-group" style={{ maxWidth: 260 }}>
+              <label htmlFor="new-course-status">Status inicial</label>
+              <select
+                id="new-course-status"
+                className="field-input"
+                value={newCourseStatus}
+                onChange={(e) => setNewCourseStatus(e.target.value as 'draft' | 'published')}
+              >
+                <option value="draft">Rascunho (oculto na vitrine)</option>
+                <option value="published">Publicado na vitrine</option>
+              </select>
+            </div>
+            <div>
+              <button type="submit" className="pill-btn" disabled={busy}>
+                Cadastrar curso
+              </button>
+            </div>
+          </form>
+
+          <section className="card">
+            <h2 style={{ margin: 0, fontSize: 22 }}>Catálogo multi-curso e alertas de completude</h2>
+            <div className="module-stack">
+              {overview.courses.map((c) => (
+                <article key={c.id} className="block-card">
+                  <div className="badge-row">
+                    <span className={`badge ${c.status === 'published' ? 'badge-available' : 'badge-planned'}`}>
+                      {c.status}
+                    </span>
+                    <span className="badge badge-neutral">
+                      {c.published_modules} módulo(s) publicado(s) · {c.planned_modules} planejado(s)
+                    </span>
+                    <span className="badge badge-neutral">
+                      {c.pending_stream_videos} vídeo(s) Stream pendente(s)
+                    </span>
+                  </div>
+                  <h4>{c.title}</h4>
+                  <div className="card-actions">
+                    <Link href={`/app/cursos/${c.slug}`} className="pill-btn pill-btn-sm pill-btn-secondary">
+                      Pré-visualizar como aluno
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
       ) : null}
 
       {tab === 'finance' ? (

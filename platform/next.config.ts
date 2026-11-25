@@ -1,8 +1,22 @@
 import type { NextConfig } from 'next';
 
+const cspDirectives = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://sdk.mercadopago.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: https:",
+  "font-src 'self' data:",
+  "frame-src 'self' https://*.cloudflarestream.com https://iframe.videodelivery.net https://www.mercadopago.com.br",
+  "connect-src 'self' https://api.mercadopago.com https://*.cloudflarestream.com",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "frame-ancestors 'none'",
+].join('; ');
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  output: 'standalone',
   images: {
     unoptimized: true,
   },
@@ -10,6 +24,8 @@ const nextConfig: NextConfig = {
     {
       source: '/(.*)',
       headers: [
+        { key: 'Content-Security-Policy', value: cspDirectives },
+        { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
         { key: 'X-Content-Type-Options', value: 'nosniff' },
         { key: 'X-Frame-Options', value: 'DENY' },
         { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },

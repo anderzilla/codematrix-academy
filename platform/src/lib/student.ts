@@ -567,6 +567,36 @@ export function startBlockQuizAttempt(
     };
   }
 
+  // Regra pedagógica: se a última tentativa submetida foi reprovada (<70%), exige revisão das 3 aulas do bloco
+  const lastSubmitted = db
+    .prepare(
+      `SELECT passed, submitted_at FROM quiz_attempts
+       WHERE user_id = ? AND block_id = ? AND status = 'submitted'
+       ORDER BY submitted_at DESC LIMIT 1`,
+    )
+    .get(userId, targetBlock.id) as { passed: number; submitted_at: string | null } | undefined;
+
+  if (lastSubmitted && Number(lastSubmitted.passed) === 0 && lastSubmitted.submitted_at) {
+    const reviewedCountRow = db
+      .prepare(
+        `SELECT COUNT(*) AS cnt FROM lesson_progress lp
+         INNER JOIN lessons l ON l.id = lp.lesson_id
+         WHERE lp.user_id = ? AND l.block_id = ?
+           AND lp.reviewed_at IS NOT NULL
+           AND datetime(lp.reviewed_at) > datetime(?)`,
+      )
+      .get(userId, targetBlock.id, lastSubmitted.submitted_at) as { cnt: number };
+
+    if (Number(reviewedCountRow.cnt) < targetBlock.totalLessonsCount) {
+      return {
+        ok: false,
+        status: 400,
+        code: 'review_required',
+        error: `Você precisa rever e confirmar as ${targetBlock.totalLessonsCount} aulas deste bloco antes de fazer uma nova tentativa (${reviewedCountRow.cnt}/${targetBlock.totalLessonsCount} revisadas).`,
+      };
+    }
+  }
+
   const bankRows = db
     .prepare(
       `SELECT id, question_code, lesson_position, question, options_json, correct_index, skill, explanation

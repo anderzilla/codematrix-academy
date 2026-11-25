@@ -96,6 +96,52 @@ export async function requireAdminSession(options: {
   };
 }
 
+function decodeBase32(input: string): Buffer {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  const clean = input.toUpperCase().replace(/[^A-Z2-7]/g, '');
+  let bits = 0;
+  let value = 0;
+  const out: number[] = [];
+  for (const ch of clean) {
+    const idx = alphabet.indexOf(ch);
+    if (idx === -1) continue;
+    value = (value << 5) | idx;
+    bits += 5;
+    if (bits >= 8) {
+      out.push((value >>> (bits - 8)) & 0xff);
+      bits -= 8;
+    }
+  }
+  return Buffer.from(out);
+}
+
+function generateTotpAt(secretBase32: string, counter: number): string {
+  const key = decodeBase32(secretBase32);
+  const buf = Buffer.alloc(8);
+  buf.writeBigUInt64BE(BigInt(counter));
+  const hmac = crypto.createHmac('sha1', key).update(buf).digest();
+  const offset = hmac[hmac.length - 1] & 0x0f;
+  const binary =
+    ((hmac[offset] & 0x7f) << 24) |
+    ((hmac[offset + 1] & 0xff) << 16) |
+    ((hmac[offset + 2] & 0xff) << 8) |
+    (hmac[offset + 3] & 0xff);
+  return String(binary % 1_000_000).padStart(6, '0');
+}
+
+export function verifyTotpCode(secretBase32: string, provided: string): boolean {
+  const step = Math.floor(Date.now() / 1000 / 30);
+  const providedBuf = Buffer.from(provided, 'utf8');
+  for (const delta of [-1, 0, 1]) {
+    const expected = generateTotpAt(secretBase32, step + delta);
+    const expectedBuf = Buffer.from(expected, 'utf8');
+    if (expectedBuf.length === providedBuf.length && crypto.timingSafeEqual(expectedBuf, providedBuf)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function verifyAdminStepUpMfa(
   db: DatabaseSync,
   input: {
@@ -110,28 +156,40 @@ export function verifyAdminStepUpMfa(
     return { ok: false, status: 400, error: 'Informe um código MFA de 6 dígitos.' };
   }
 
-  const expectedCode = env.ACADEMY_ADMIN_MFA_CODE?.trim() ?? '';
-  if (!expectedCode) {
+  const totpSecret = env.ACADEMY_ADMIN_TOTP_SECRET?.trim() ?? '';
+  const staticCode = env.ACADEMY_ADMIN_MFA_CODE?.trim() ?? '';
+  if (!totpSecret && !staticCode) {
     return {
       ok: false,
       status: 503,
       error:
-        'MFA administrativo não configurado neste ambiente (fail-closed): defina ACADEMY_ADMIN_MFA_CODE (ou provedor TOTP/OIDC) no servidor/Key Vault.',
+        'MFA administrativo não configurado neste ambiente (fail-closed): defina ACADEMY_ADMIN_TOTP_SECRET (RFC 6238) no Azure Key Vault.',
     };
   }
 
-  const expectedBuf = Buffer.from(expectedCode, 'utf8');
-  const providedBuf = Buffer.from(provided, 'utf8');
-  if (expectedBuf.length !== providedBuf.length || !crypto.timingSafeEqual(expectedBuf, providedBuf)) {
+  let valid = false;
+  let method = 'totp_rfc6238';
+  if (totpSecret) {
+    valid = verifyTotpCode(totpSecret, provided);
+  } else if (staticCode) {
+    method = 'step_up_code';
+    const expectedBuf = Buffer.from(staticCode, 'utf8');
+    const providedBuf = Buffer.from(provided, 'utf8');
+    valid =
+      expectedBuf.length === providedBuf.length &&
+      crypto.timingSafeEqual(expectedBuf, providedBuf);
+  }
+
+  if (!valid) {
     return { ok: false, status: 401, error: 'Código MFA inválido.' };
   }
 
   const expiresAt = new Date(Date.now() + MFA_TTL_HOURS * 3600 * 1000).toISOString();
   db.prepare(
     `INSERT INTO session_mfa (session_token_hash, user_id, method, verified_at, expires_at)
-     VALUES (?, ?, 'step_up_code', datetime('now'), ?)
-     ON CONFLICT(session_token_hash) DO UPDATE SET verified_at = datetime('now'), expires_at = excluded.expires_at`,
-  ).run(input.sessionTokenHash, input.userId, expiresAt);
+     VALUES (?, ?, ?, datetime('now'), ?)
+     ON CONFLICT(session_token_hash) DO UPDATE SET method = excluded.method, verified_at = datetime('now'), expires_at = excluded.expires_at`,
+  ).run(input.sessionTokenHash, input.userId, method, expiresAt);
 
   recordAuditEvent(db, {
     actorUserId: input.userId,
@@ -139,6 +197,7 @@ export function verifyAdminStepUpMfa(
     action: 'admin.mfa_verified',
     targetType: 'session',
     targetId: input.sessionTokenHash.slice(0, 12),
+    metadata: { method },
   });
 
   return { ok: true, expiresAt };

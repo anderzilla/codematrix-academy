@@ -421,6 +421,9 @@ export function PartnersDashboardClient({ data }: { data: PartnerDashboardData }
                 <li key={l.id} className="lesson-item">
                   <strong>{l.code}</strong> · {l.campaign} ({l.used_count} vendas / {l.clicks_count}{' '}
                   cliques)
+                  <div className="meta-ref">
+                    Link de divulgação: <code>/r/{l.code}</code>
+                  </div>
                 </li>
               ))}
             </ul>
