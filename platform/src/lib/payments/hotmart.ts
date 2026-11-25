@@ -1,6 +1,10 @@
 import crypto from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import type { PublicOfferItem } from '@/lib/catalog';
+import {
+  grantEntitlement,
+  revokeOrSuspendByTransaction,
+} from '@/lib/entitlements';
 
 export const ALLOWED_HOTMART_EVENTS = new Set([
   'PURCHASE_APPROVED',
@@ -11,6 +15,14 @@ export const ALLOWED_HOTMART_EVENTS = new Set([
   'PURCHASE_PROTEST',
   'PURCHASE_DELAYED',
   'PURCHASE_BILLET_PRINTED',
+]);
+
+const GRANT_EVENTS = new Set(['PURCHASE_APPROVED', 'PURCHASE_COMPLETE']);
+const REVOKE_EVENTS = new Set([
+  'PURCHASE_REFUNDED',
+  'PURCHASE_CHARGEBACK',
+  'PURCHASE_CANCELED',
+  'PURCHASE_PROTEST',
 ]);
 
 export interface HotmartProductMapping {
@@ -87,7 +99,7 @@ export function resolveCheckoutTarget(
       state: 'free_sample',
       checkoutUrl: null,
       message:
-        'Amostra gratuita explícita (Bloco 1). O acesso autenticado do aluno será ativado na Etapa 2 em /app.',
+        'Amostra gratuita explícita (Bloco 1). Crie sua conta ou entre na Área do Aluno para ativar o acesso gratuito.',
     };
   }
 
@@ -251,7 +263,6 @@ export function validateAndNormalizeHotmartPayload(
 
   const priceObj = purchase?.price as Record<string, unknown> | undefined;
 
-  // Apenas campos operacionais mínimos — sem cartão, CPF, endereço, telefone ou segredos
   const sanitizedPayload: Record<string, unknown> = {
     id: providerEventId,
     event: eventType,
@@ -279,53 +290,117 @@ export function validateAndNormalizeHotmartPayload(
   };
 }
 
+function resolveOfferForHotmartEvent(
+  db: DatabaseSync,
+  normalized: NormalizedHotmartEvent,
+  env: NodeJS.ProcessEnv = process.env,
+): { course_id: string; sku: string; access_scope: string } | null {
+  const byDb = db
+    .prepare(
+      `SELECT course_id, sku, access_scope
+       FROM offers
+       WHERE hotmart_product_id = ? OR (? IS NOT NULL AND hotmart_offer_code = ?)
+       LIMIT 1`,
+    )
+    .get(normalized.hotmartProductId, normalized.offerCode, normalized.offerCode) as
+    | { course_id: string; sku: string; access_scope: string }
+    | undefined;
+
+  if (byDb) return byDb;
+
+  const config = getHotmartConfig(env);
+  for (const [sku, mapping] of Object.entries(config.productMap)) {
+    const productMatches =
+      mapping.productId && String(mapping.productId) === normalized.hotmartProductId;
+    const offerMatches =
+      mapping.offerCode && normalized.offerCode && mapping.offerCode === normalized.offerCode;
+    if (productMatches || offerMatches) {
+      const offerRow = db
+        .prepare(`SELECT course_id, sku, access_scope FROM offers WHERE sku = ? LIMIT 1`)
+        .get(sku) as { course_id: string; sku: string; access_scope: string } | undefined;
+      if (offerRow) return offerRow;
+    }
+  }
+
+  return null;
+}
+
 export function recordHotmartWebhookEvent(
   db: DatabaseSync,
   normalized: NormalizedHotmartEvent,
   rawPayloadText: string,
+  env: NodeJS.ProcessEnv = process.env,
 ): {
   duplicate: boolean;
   recordId: string;
   providerEventId: string;
-  entitlementStatus: 'deferred_to_stage_2';
+  entitlementGranted: boolean;
+  entitlementStatus: string;
 } {
   const existing = db
     .prepare(
-      `SELECT id FROM payment_events WHERE provider = 'hotmart' AND provider_event_id = ?`,
+      `SELECT id, entitlement_status FROM payment_events WHERE provider = 'hotmart' AND provider_event_id = ?`,
     )
-    .get(normalized.providerEventId) as { id: string } | undefined;
+    .get(normalized.providerEventId) as { id: string; entitlement_status: string } | undefined;
 
   if (existing) {
     return {
       duplicate: true,
       recordId: existing.id,
       providerEventId: normalized.providerEventId,
-      entitlementStatus: 'deferred_to_stage_2',
+      entitlementGranted: existing.entitlement_status === 'granted',
+      entitlementStatus: existing.entitlement_status,
     };
   }
 
-  // Resolve oferta/curso vinculado, se houver mapeamento no banco
-  const offerMatch = db
-    .prepare(
-      `SELECT course_id, sku
-       FROM offers
-       WHERE hotmart_product_id = ? OR (? IS NOT NULL AND hotmart_offer_code = ?)
-       LIMIT 1`,
-    )
-    .get(normalized.hotmartProductId, normalized.offerCode, normalized.offerCode) as
-    | { course_id: string; sku: string }
-    | undefined;
-
+  const offerMatch = resolveOfferForHotmartEvent(db, normalized, env);
   const recordId = `pe_${crypto.randomUUID().replace(/-/g, '')}`;
   const payloadSha256 = sha256Hex(rawPayloadText);
 
+  let entitlementGranted = false;
+  let entitlementStatus = 'no_entitlement_change';
+  let processingStatus: 'processed' | 'ignored' = 'processed';
+
+  db.exec('BEGIN');
   try {
+    if (GRANT_EVENTS.has(normalized.eventType)) {
+      if (offerMatch && normalized.buyerEmailHash) {
+        grantEntitlement(db, {
+          buyerEmailHash: normalized.buyerEmailHash,
+          courseId: offerMatch.course_id,
+          offerSku: offerMatch.sku,
+          accessScope: offerMatch.access_scope,
+          sourceProvider: 'hotmart',
+          sourceEventId: normalized.providerEventId,
+          transactionCode: normalized.transactionCode,
+          reason: `Compra confirmada via webhook Hotmart (${normalized.eventType})`,
+          actor: 'hotmart_webhook',
+        });
+        entitlementGranted = true;
+        entitlementStatus = 'granted';
+      } else {
+        entitlementStatus = 'unmapped_sku';
+        processingStatus = 'ignored';
+      }
+    } else if (REVOKE_EVENTS.has(normalized.eventType)) {
+      const revoked = revokeOrSuspendByTransaction(db, {
+        transactionCode: normalized.transactionCode,
+        eventType: normalized.eventType,
+        sourceEventId: normalized.providerEventId,
+        env,
+      });
+      entitlementStatus =
+        revoked.updatedCount > 0 ? revoked.targetStatus : 'no_active_entitlement';
+    } else {
+      entitlementStatus = 'pending_payment';
+    }
+
     db.prepare(
       `INSERT INTO payment_events (
          id, provider, provider_event_id, event_type, course_id, offer_sku,
          hotmart_product_id, transaction_code, buyer_email_hash,
          payload_sha256, payload_sanitized_json, processing_status, entitlement_status
-       ) VALUES (?, 'hotmart', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'recorded_stage1', 'deferred_to_stage_2')`,
+       ) VALUES (?, 'hotmart', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).run(
       recordId,
       normalized.providerEventId,
@@ -337,20 +412,25 @@ export function recordHotmartWebhookEvent(
       normalized.buyerEmailHash,
       payloadSha256,
       JSON.stringify(normalized.sanitizedPayload),
+      processingStatus,
+      entitlementStatus,
     );
+
+    db.exec('COMMIT');
   } catch (err) {
-    // Trata condição de corrida concorrente com a constraint UNIQUE(provider, provider_event_id)
+    db.exec('ROLLBACK');
     const retryExisting = db
       .prepare(
-        `SELECT id FROM payment_events WHERE provider = 'hotmart' AND provider_event_id = ?`,
+        `SELECT id, entitlement_status FROM payment_events WHERE provider = 'hotmart' AND provider_event_id = ?`,
       )
-      .get(normalized.providerEventId) as { id: string } | undefined;
+      .get(normalized.providerEventId) as { id: string; entitlement_status: string } | undefined;
     if (retryExisting) {
       return {
         duplicate: true,
         recordId: retryExisting.id,
         providerEventId: normalized.providerEventId,
-        entitlementStatus: 'deferred_to_stage_2',
+        entitlementGranted: retryExisting.entitlement_status === 'granted',
+        entitlementStatus: retryExisting.entitlement_status,
       };
     }
     throw err;
@@ -360,6 +440,7 @@ export function recordHotmartWebhookEvent(
     duplicate: false,
     recordId,
     providerEventId: normalized.providerEventId,
-    entitlementStatus: 'deferred_to_stage_2',
+    entitlementGranted,
+    entitlementStatus,
   };
 }

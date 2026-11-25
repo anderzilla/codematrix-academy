@@ -57,7 +57,7 @@ export const ACADEMY_SURFACES: SurfaceContract[] = [
     name: 'Área do Aluno',
     basePath: '/app',
     stage: 2,
-    status: 'reserved_stage_2',
+    status: 'active',
     requiresAuth: true,
     requiresMfa: false,
     allowedRoles: ['student', 'instructor', 'admin'],

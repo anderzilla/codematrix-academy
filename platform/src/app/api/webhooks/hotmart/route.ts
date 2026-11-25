@@ -52,7 +52,7 @@ export async function POST(request: Request) {
       duplicate: result.duplicate,
       eventId: result.providerEventId,
       recordId: result.recordId,
-      entitlementGranted: false,
+      entitlementGranted: result.entitlementGranted,
       entitlementStatus: result.entitlementStatus,
     },
     { status: 200 },

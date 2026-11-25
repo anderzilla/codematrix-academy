@@ -169,7 +169,7 @@ test('vitrine HTTP, isolamento de rascunhos e webhook Hotmart autenticado e idem
     });
     assert.equal(invalidSchemaRes.status, 400);
 
-    // 5. Webhook Hotmart aceita fixture válida sem conceder entitlement na Etapa 1
+    // 5. Webhook Hotmart aceita fixture válida sem SKU mapeado e falha fechado (não concede direito)
     const firstWebhookRes = await fetch(`${baseUrl}/api/webhooks/hotmart`, {
       method: 'POST',
       headers: {
@@ -183,7 +183,7 @@ test('vitrine HTTP, isolamento de rascunhos e webhook Hotmart autenticado e idem
     assert.equal(firstBody.ok, true);
     assert.equal(firstBody.duplicate, false);
     assert.equal(firstBody.entitlementGranted, false);
-    assert.equal(firstBody.entitlementStatus, 'deferred_to_stage_2');
+    assert.equal(firstBody.entitlementStatus, 'unmapped_sku');
 
     // 6. Reenvio do mesmo evento é idempotente e não duplica registro no banco
     const dupWebhookRes = await fetch(`${baseUrl}/api/webhooks/hotmart`, {

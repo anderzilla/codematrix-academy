@@ -571,6 +571,31 @@ export function runSeed({
       report.migrated.cmsPages += 1;
     }
 
+    // 10. Agenda inicial de live (planejada, sem stream key no banco)
+    db.prepare(
+      `INSERT INTO live_events (
+         id, course_id, module_id, code, title, description, scheduled_at,
+         duration_minutes, status, access_scope, retention_days
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET
+         title = excluded.title,
+         description = excluded.description,
+         scheduled_at = excluded.scheduled_at,
+         status = excluded.status`,
+    ).run(
+      'live_formacao_ia_m1_kickoff',
+      courseId,
+      'mod_formacao_ia_1',
+      'LIVE-M1-BOAS-VINDAS',
+      'Encontro ao vivo — Boas-vindas e dúvidas do Módulo 1',
+      'Sessão de orientação sobre o percurso do Módulo 1, uso das fichas didáticas Intelicar e boas práticas de estudo. O replay ficará disponível conforme a política de retenção.',
+      '2026-12-10T20:00:00-03:00',
+      60,
+      'scheduled',
+      'course:formacao-ia-anderzilla:block:B01',
+      90,
+    );
+
     db.exec('COMMIT');
   } catch (err) {
     db.exec('ROLLBACK');

@@ -1,4 +1,4 @@
--- CodeMatrix Academy — Schema relacional multi-curso (Etapa 1)
+-- CodeMatrix Academy — Schema relacional multi-curso (Etapas 1 e 2)
 -- Compatível com SQLite (node:sqlite) e preparatório para PostgreSQL
 
 PRAGMA foreign_keys = ON;
@@ -165,7 +165,7 @@ CREATE TABLE IF NOT EXISTS payment_events (
   buyer_email_hash TEXT,
   payload_sha256 TEXT NOT NULL,
   payload_sanitized_json TEXT NOT NULL,
-  processing_status TEXT NOT NULL CHECK (processing_status IN ('recorded_stage1', 'ignored', 'failed')),
+  processing_status TEXT NOT NULL CHECK (processing_status IN ('recorded_stage1', 'processed', 'ignored', 'failed')),
   entitlement_status TEXT NOT NULL DEFAULT 'deferred_to_stage_2',
   received_at TEXT NOT NULL DEFAULT (datetime('now')),
   UNIQUE (provider, provider_event_id)
@@ -181,9 +181,162 @@ CREATE TABLE IF NOT EXISTS cms_pages (
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+-- ============================================================================
+-- ETAPA 2: Identidade, sessões, entitlements, progresso, quizzes, lives, certs
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS users (
+  id TEXT PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE,
+  email_hash TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  password_hash TEXT NOT NULL,
+  email_verified_at TEXT,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'suspended')),
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS user_roles (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role TEXT NOT NULL CHECK (role IN ('admin', 'ops_support', 'instructor', 'affiliate', 'seller', 'partner', 'student')),
+  course_id TEXT REFERENCES courses(id) ON DELETE CASCADE,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (user_id, role, course_id)
+);
+
+CREATE TABLE IF NOT EXISTS sessions (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL UNIQUE,
+  expires_at TEXT NOT NULL,
+  revoked_at TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS auth_tokens (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  purpose TEXT NOT NULL CHECK (purpose IN ('verify_email', 'reset_password')),
+  token_hash TEXT NOT NULL UNIQUE,
+  expires_at TEXT NOT NULL,
+  used_at TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Caixa de entrada isolada SOMENTE para desenvolvimento/testes quando SMTP não está configurado
+CREATE TABLE IF NOT EXISTS dev_mailbox (
+  id TEXT PRIMARY KEY,
+  recipient_email TEXT NOT NULL,
+  purpose TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  token_preview TEXT NOT NULL,
+  action_url TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS entitlements (
+  id TEXT PRIMARY KEY,
+  user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
+  buyer_email_hash TEXT,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  offer_sku TEXT NOT NULL,
+  access_scope TEXT NOT NULL,
+  source_provider TEXT NOT NULL CHECK (source_provider IN ('free_sample', 'hotmart', 'manual')),
+  source_event_id TEXT,
+  transaction_code TEXT,
+  status TEXT NOT NULL CHECK (status IN ('active', 'suspended', 'revoked', 'expired')),
+  starts_at TEXT NOT NULL DEFAULT (datetime('now')),
+  ends_at TEXT,
+  suspension_reason TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Trilha append-only de concessão, suspensão e revogação de direitos (nunca apagar)
+CREATE TABLE IF NOT EXISTS entitlement_history (
+  id TEXT PRIMARY KEY,
+  entitlement_id TEXT NOT NULL REFERENCES entitlements(id) ON DELETE CASCADE,
+  action TEXT NOT NULL CHECK (action IN ('granted', 'suspended', 'revoked', 'reactivated', 'claimed_by_user')),
+  reason TEXT NOT NULL DEFAULT '',
+  source_event_id TEXT,
+  actor TEXT NOT NULL DEFAULT 'system',
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS lesson_progress (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  lesson_id TEXT NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+  completed_at TEXT NOT NULL DEFAULT (datetime('now')),
+  reviewed_at TEXT,
+  UNIQUE (user_id, lesson_id)
+);
+
+CREATE TABLE IF NOT EXISTS quiz_attempts (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  block_id TEXT NOT NULL REFERENCES blocks(id) ON DELETE CASCADE,
+  version_tag TEXT NOT NULL DEFAULT 'v1.0-m1',
+  status TEXT NOT NULL CHECK (status IN ('in_progress', 'submitted')),
+  questions_snapshot_json TEXT NOT NULL,
+  answers_json TEXT,
+  score_percent INTEGER,
+  correct_count INTEGER,
+  total_count INTEGER NOT NULL DEFAULT 10,
+  passed INTEGER NOT NULL DEFAULT 0 CHECK (passed IN (0, 1)),
+  started_at TEXT NOT NULL DEFAULT (datetime('now')),
+  submitted_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS live_events (
+  id TEXT PRIMARY KEY,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  module_id TEXT REFERENCES modules(id) ON DELETE SET NULL,
+  code TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  scheduled_at TEXT NOT NULL,
+  duration_minutes INTEGER NOT NULL DEFAULT 60,
+  status TEXT NOT NULL CHECK (status IN ('scheduled', 'live', 'replay_available', 'ended')),
+  access_scope TEXT NOT NULL,
+  live_input_uid TEXT,
+  replay_stream_uid TEXT,
+  retention_days INTEGER NOT NULL DEFAULT 90,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (course_id, code)
+);
+
+CREATE TABLE IF NOT EXISTS certificates (
+  id TEXT PRIMARY KEY,
+  verification_code TEXT NOT NULL UNIQUE,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  student_display_name TEXT NOT NULL,
+  course_title TEXT NOT NULL,
+  scope_label TEXT NOT NULL,
+  workload_hours INTEGER NOT NULL DEFAULT 15,
+  status TEXT NOT NULL CHECK (status IN ('valid', 'revoked')),
+  revocation_reason TEXT,
+  template_notice TEXT NOT NULL,
+  issued_at TEXT NOT NULL DEFAULT (datetime('now')),
+  revoked_at TEXT,
+  UNIQUE (user_id, course_id, scope_label)
+);
+
 CREATE INDEX IF NOT EXISTS idx_courses_status ON courses(status);
 CREATE INDEX IF NOT EXISTS idx_modules_course_pos ON modules(course_id, position);
 CREATE INDEX IF NOT EXISTS idx_blocks_module_pos ON blocks(module_id, position);
 CREATE INDEX IF NOT EXISTS idx_lessons_block_pos ON lessons(block_id, position);
 CREATE INDEX IF NOT EXISTS idx_offers_course_status ON offers(course_id, status);
 CREATE INDEX IF NOT EXISTS idx_payment_events_provider ON payment_events(provider, received_at);
+CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_entitlements_user_course ON entitlements(user_id, course_id, status);
+CREATE INDEX IF NOT EXISTS idx_entitlements_email_hash ON entitlements(buyer_email_hash, status);
+CREATE INDEX IF NOT EXISTS idx_entitlements_tx ON entitlements(transaction_code);
+CREATE INDEX IF NOT EXISTS idx_lesson_progress_user ON lesson_progress(user_id, course_id);
+CREATE INDEX IF NOT EXISTS idx_quiz_attempts_user_block ON quiz_attempts(user_id, block_id, status);
+CREATE INDEX IF NOT EXISTS idx_certificates_code ON certificates(verification_code);
