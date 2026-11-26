@@ -251,37 +251,38 @@ export async function createInternalCheckoutOrder(
           providerMode = 'mercadopago_live';
         }
       } else {
-        const res = await fetch('https://api.mercadopago.com/checkout/preferences', {
+        const res = await fetch('https://api.mercadopago.com/v1/orders', {
           method: 'POST',
           headers: {
             authorization: `Bearer ${mpToken}`,
             'content-type': 'application/json',
+            'x-idempotency-key': orderCode,
           },
           body: JSON.stringify({
+            type: 'online',
+            processing_mode: 'automatic',
+            total_amount: (discount.netPayableCents / 100).toFixed(2),
             external_reference: orderCode,
-            notification_url: `${publicUrl}/api/webhooks/mercadopago`,
+            description: offer.title,
             payer: { email },
-            items: [
-              {
-                id: offer.sku,
-                title: offer.title,
-                quantity: 1,
-                currency_id: offer.currency || 'BRL',
-                unit_price: Number((discount.netPayableCents / 100).toFixed(2)),
+            config: {
+              online: {
+                success_url: `${publicUrl}/app`,
+                pending_url: `${publicUrl}/app`,
+                failure_url: `${publicUrl}/oferta/${input.offerCode}`,
+                auto_return: 'approved',
               },
-            ],
-            back_urls: {
-              success: `${publicUrl}/app`,
-              pending: `${publicUrl}/app`,
-              failure: `${publicUrl}/oferta/${input.offerCode}`,
             },
-            auto_return: 'approved',
           }),
         });
         if (res.ok) {
-          const mpPref = (await res.json()) as { id?: string; init_point?: string };
-          providerPaymentId = mpPref.id ?? null;
-          checkoutUrl = mpPref.init_point ?? null;
+          const mpOrder = (await res.json()) as {
+            id?: string;
+            checkout_url?: string;
+            init_point?: string;
+          };
+          providerPaymentId = mpOrder.id ?? null;
+          checkoutUrl = mpOrder.checkout_url ?? mpOrder.init_point ?? null;
           providerMode = 'mercadopago_live';
         }
       }
