@@ -11,6 +11,14 @@ Comando: `rex log add --modelo <modelo> --agente <id> --tipo <tipo> --texto "...
 
 <!-- ENTRADAS: novas entradas são inseridas logo abaixo desta linha -->
 
+### 2026-11-26 14:15 · melhoria · antigravity · multi-curso-academy
+Ajustes multi-curso de ponta a ponta implementados na branch `feat/academy-multicourse` cobrindo as 4 superfícies (vitrine, aluno, parceiros, admin), schema/migrations e testes isolados Curso A vs Curso B:
+- **Banco e migrations (`schema.sql`, `db/postgres/schema.sql`, `src/lib/db.ts`, `scripts/seed-catalog.mjs`):** status `draft → review → published → archived` + `active_version_id`, `course_slug_aliases` (redirect auditado), `offer_grants` (bundles multi-módulo/multi-curso), `course_partner_assignments` (associação muitos-para-muitos com vigência, escopo, termos e `impact_note`), `schema_migrations`, colunas `course_version_id` em progresso/quiz/certificados/pedidos/comissões/ledger e `--dry-run` + relatório de órfãos na seed.
+- **Domínio e APIs:** `rbac.ts` remove acesso global automático de parceiros e revalida `course_partner_assignments` por curso/vigência; `entitlements.ts` adiciona `grantOfferEntitlements` (concede exatamente `offer_grants`, recusa SKU não mapeado); `admin-courses.ts` + `/api/v1/admin/courses`, `/api/v1/admin/courses/[courseId]`, `/api/v1/admin/courses/[courseId]/partners`, `/api/v1/admin/partners/[partnerId]/courses`, `/api/v1/partners/courses` e filtro `?courseId=` no DRE (`/api/v1/admin/finance/balance`).
+- **UI das 4 superfícies:** removidos todos os hardcodes da Formação IA (`page.tsx`, `cursos/page.tsx`, `StudentLibraryClient.tsx`, `PartnersDashboardClient.tsx`); adicionadas rotas canônicas `/courses`, `/courses/[slug]`, `/app/courses`, `/partners/courses` e `/admin/courses`.
+- **Validação:** `dry-run`, `seed`, `lint`, `typecheck`, `build` (73 rotas) e `test` (**8/8** incluindo `test/stage6-multicourse.test.mjs`). Nenhum deploy em produção executado nesta rodada.
+Arquivos: platform/src/lib/schema.sql, platform/db/postgres/schema.sql, platform/src/lib/db.ts, platform/scripts/seed-catalog.mjs, platform/src/lib/catalog.ts, platform/src/lib/rbac.ts, platform/src/lib/entitlements.ts, platform/src/lib/admin-courses.ts, platform/src/app/courses/, platform/src/app/app/courses/, platform/src/app/partners/courses/, platform/src/app/admin/courses/, platform/test/stage6-multicourse.test.mjs
+
 ### 2026-11-25 18:14 · execucao · antigravity · deploy-azure
 Deploy em produção concluído no Azure Container Apps (`codematrix-academy` / `eastus2`) com autorização do Founder para validação do Mercado Pago (`code.matrix.cwb@gmail.com`):
 - **Recursos provisionados:** ACR `cmacademyacr44b763.azurecr.io` (imagem `codematrix-academy:v1`), Container Apps Environment `cmacademy-cae`, Storage Account `cmacademyst44b763` (File Share `academydata`), Key Vault `cmacademy-kv-44b763` e Container App `codematrix-academy-web`.

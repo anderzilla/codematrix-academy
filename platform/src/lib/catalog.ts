@@ -8,7 +8,7 @@ export interface CourseSummary {
   summary: string;
   category: string;
   language: string;
-  status: 'draft' | 'published' | 'archived';
+  status: 'draft' | 'review' | 'published' | 'archived';
   plannedModulesCount: number;
   plannedLessonsCount: number;
   plannedBlocksCount: number;
@@ -17,6 +17,7 @@ export interface CourseSummary {
   availableLessonsCount: number;
   availableBlocksCount: number;
   hasFreeSample: boolean;
+  freeSampleOfferCode: string | null;
 }
 
 export interface PublicLessonItem {
@@ -95,40 +96,39 @@ export interface CmsPage {
   updatedAt: string;
 }
 
-export function listPublishedCourses(query?: string): CourseSummary[] {
+export function listPublishedCourses(query?: string, category?: string): CourseSummary[] {
   const db = getDb();
   const trimmed = query?.trim().toLowerCase() ?? '';
-  const sql = trimmed
-    ? `
-      SELECT
-        c.id, c.slug, c.title, c.subtitle, c.summary, c.category, c.language, c.status,
-        c.planned_modules_count, c.planned_lessons_count, c.planned_blocks_count, c.min_pass_percent,
-        (SELECT COUNT(*) FROM modules m WHERE m.course_id = c.id AND m.status = 'published') AS available_modules_count,
-        (SELECT COUNT(*) FROM lessons l WHERE l.course_id = c.id AND l.status = 'published') AS available_lessons_count,
-        (SELECT COUNT(*) FROM blocks b WHERE b.course_id = c.id AND b.status = 'published') AS available_blocks_count,
-        (SELECT CASE WHEN EXISTS(SELECT 1 FROM blocks b WHERE b.course_id = c.id AND b.is_free_sample = 1 AND b.status = 'published') THEN 1 ELSE 0 END) AS has_free_sample
-      FROM courses c
-      WHERE c.status = 'published'
-        AND (LOWER(c.title) LIKE ? OR LOWER(c.subtitle) LIKE ? OR LOWER(c.summary) LIKE ? OR LOWER(c.category) LIKE ?)
-      ORDER BY c.created_at ASC, c.slug ASC
-    `
-    : `
-      SELECT
-        c.id, c.slug, c.title, c.subtitle, c.summary, c.category, c.language, c.status,
-        c.planned_modules_count, c.planned_lessons_count, c.planned_blocks_count, c.min_pass_percent,
-        (SELECT COUNT(*) FROM modules m WHERE m.course_id = c.id AND m.status = 'published') AS available_modules_count,
-        (SELECT COUNT(*) FROM lessons l WHERE l.course_id = c.id AND l.status = 'published') AS available_lessons_count,
-        (SELECT COUNT(*) FROM blocks b WHERE b.course_id = c.id AND b.status = 'published') AS available_blocks_count,
-        (SELECT CASE WHEN EXISTS(SELECT 1 FROM blocks b WHERE b.course_id = c.id AND b.is_free_sample = 1 AND b.status = 'published') THEN 1 ELSE 0 END) AS has_free_sample
-      FROM courses c
-      WHERE c.status = 'published'
-      ORDER BY c.created_at ASC, c.slug ASC
-    `;
+  const trimmedCat = category?.trim().toLowerCase() ?? '';
+  const whereParts = [`c.status = 'published'`];
+  const params: string[] = [];
 
-  const stmt = db.prepare(sql);
-  const rows = (trimmed
-    ? stmt.all(`%${trimmed}%`, `%${trimmed}%`, `%${trimmed}%`, `%${trimmed}%`)
-    : stmt.all()) as Array<Record<string, unknown>>;
+  if (trimmed) {
+    whereParts.push(
+      `(LOWER(c.title) LIKE ? OR LOWER(c.subtitle) LIKE ? OR LOWER(c.summary) LIKE ? OR LOWER(c.category) LIKE ?)`,
+    );
+    params.push(`%${trimmed}%`, `%${trimmed}%`, `%${trimmed}%`, `%${trimmed}%`);
+  }
+  if (trimmedCat) {
+    whereParts.push(`LOWER(c.category) = ?`);
+    params.push(trimmedCat);
+  }
+
+  const sql = `
+    SELECT
+      c.id, c.slug, c.title, c.subtitle, c.summary, c.category, c.language, c.status,
+      c.planned_modules_count, c.planned_lessons_count, c.planned_blocks_count, c.min_pass_percent,
+      (SELECT COUNT(*) FROM modules m WHERE m.course_id = c.id AND m.status = 'published') AS available_modules_count,
+      (SELECT COUNT(*) FROM lessons l WHERE l.course_id = c.id AND l.status = 'published') AS available_lessons_count,
+      (SELECT COUNT(*) FROM blocks b WHERE b.course_id = c.id AND b.status = 'published') AS available_blocks_count,
+      (SELECT CASE WHEN EXISTS(SELECT 1 FROM blocks b WHERE b.course_id = c.id AND b.is_free_sample = 1 AND b.status = 'published') THEN 1 ELSE 0 END) AS has_free_sample,
+      (SELECT o.offer_code FROM offers o WHERE o.course_id = c.id AND o.is_free = 1 AND o.status = 'published' ORDER BY o.created_at ASC LIMIT 1) AS free_sample_offer_code
+    FROM courses c
+    WHERE ${whereParts.join(' AND ')}
+    ORDER BY c.created_at ASC, c.slug ASC
+  `;
+
+  const rows = db.prepare(sql).all(...params) as Array<Record<string, unknown>>;
 
   return rows.map((row) => ({
     id: String(row.id),
@@ -146,8 +146,23 @@ export function listPublishedCourses(query?: string): CourseSummary[] {
     availableModulesCount: Number(row.available_modules_count),
     availableLessonsCount: Number(row.available_lessons_count),
     availableBlocksCount: Number(row.available_blocks_count),
-    hasFreeSample: Number(row.has_free_sample) === 1,
+    hasFreeSample: Number(row.has_free_sample) === 1 || Boolean(row.free_sample_offer_code),
+    freeSampleOfferCode: row.free_sample_offer_code ? String(row.free_sample_offer_code) : null,
   }));
+}
+
+export function resolveCourseSlugAlias(slug: string): string | null {
+  const db = getDb();
+  const row = db
+    .prepare(
+      `SELECT c.slug
+       FROM course_slug_aliases a
+       INNER JOIN courses c ON c.id = a.course_id
+       WHERE a.old_slug = ? AND c.status = 'published'
+       LIMIT 1`,
+    )
+    .get(slug) as { slug: string } | undefined;
+  return row?.slug ?? null;
 }
 
 export function getPublishedCourseBySlug(slug: string): CourseDetail | null {
@@ -307,6 +322,7 @@ export function getPublishedCourseBySlug(slug: string): CourseDetail | null {
     availableLessonsCount: lessonRows.length,
     availableBlocksCount: blockRows.filter((b) => b.status === 'published').length,
     hasFreeSample: blockRows.some((b) => Number(b.is_free_sample) === 1 && b.status === 'published'),
+    freeSampleOfferCode: publishedOffers.find((o) => o.isFree)?.offerCode ?? null,
     modules,
     publishedOffers,
     draftOffersCount: Number(draftOfferCountRow.cnt),

@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS courses (
   summary TEXT NOT NULL DEFAULT '',
   category TEXT NOT NULL DEFAULT 'Formação',
   language TEXT NOT NULL DEFAULT 'pt-BR',
-  status TEXT NOT NULL CHECK (status IN ('draft', 'published', 'archived')),
+  status TEXT NOT NULL CHECK (status IN ('draft', 'review', 'published', 'archived')),
+  active_version_id TEXT,
   planned_modules_count INTEGER NOT NULL DEFAULT 0,
   planned_lessons_count INTEGER NOT NULL DEFAULT 0,
   planned_blocks_count INTEGER NOT NULL DEFAULT 0,
@@ -28,6 +29,14 @@ CREATE TABLE IF NOT EXISTS courses (
   metadata_json TEXT NOT NULL DEFAULT '{}',
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS course_slug_aliases (
+  id TEXT PRIMARY KEY,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  old_slug TEXT NOT NULL UNIQUE,
+  created_by TEXT NOT NULL DEFAULT 'system',
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 CREATE TABLE IF NOT EXISTS course_versions (
@@ -279,8 +288,9 @@ CREATE TABLE IF NOT EXISTS quiz_attempts (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  course_version_id TEXT,
   block_id TEXT NOT NULL REFERENCES blocks(id) ON DELETE CASCADE,
-  version_tag TEXT NOT NULL DEFAULT 'v1.0-m1',
+  version_tag TEXT NOT NULL DEFAULT 'v1',
   status TEXT NOT NULL CHECK (status IN ('in_progress', 'submitted')),
   questions_snapshot_json TEXT NOT NULL,
   answers_json TEXT,
@@ -607,3 +617,51 @@ CREATE TABLE IF NOT EXISTS waitlist_leads (
 
 CREATE INDEX IF NOT EXISTS idx_orders_provider_pid ON orders(provider, provider_payment_id);
 CREATE INDEX IF NOT EXISTS idx_orders_buyer_hash ON orders(buyer_email_hash, status);
+
+-- ============================================================================
+-- ETAPA 6: Multi-curso completo — offer_grants, course_partner_assignments e migrations
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS schema_migrations (
+  version TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  applied_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS offer_grants (
+  id TEXT PRIMARY KEY,
+  offer_id TEXT NOT NULL REFERENCES offers(id) ON DELETE CASCADE,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  course_version_id TEXT REFERENCES course_versions(id) ON DELETE SET NULL,
+  grant_type TEXT NOT NULL CHECK (grant_type IN ('course', 'module', 'block')),
+  target_code TEXT NOT NULL DEFAULT 'full',
+  access_scope TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (offer_id, course_id, access_scope)
+);
+
+CREATE TABLE IF NOT EXISTS course_partner_assignments (
+  id TEXT PRIMARY KEY,
+  partner_id TEXT NOT NULL REFERENCES partner_profiles(id) ON DELETE CASCADE,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  role TEXT NOT NULL CHECK (role IN ('instructor', 'affiliate', 'seller', 'partner')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'suspended', 'revoked', 'expired')),
+  scope_json TEXT NOT NULL DEFAULT '{}',
+  terms_version TEXT,
+  terms_accepted_at TEXT,
+  commission_rule_id TEXT REFERENCES commission_rules(id) ON DELETE SET NULL,
+  valid_from TEXT,
+  valid_until TEXT,
+  granted_by TEXT NOT NULL DEFAULT 'system',
+  revoked_by TEXT,
+  revoked_at TEXT,
+  impact_note TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (partner_id, course_id, role)
+);
+
+CREATE INDEX IF NOT EXISTS idx_offer_grants_offer_course ON offer_grants(offer_id, course_id);
+CREATE INDEX IF NOT EXISTS idx_cpa_partner_course_status ON course_partner_assignments(partner_id, course_id, status);
+CREATE INDEX IF NOT EXISTS idx_cpa_course_role_status ON course_partner_assignments(course_id, role, status);
+CREATE INDEX IF NOT EXISTS idx_slug_aliases_old_slug ON course_slug_aliases(old_slug);

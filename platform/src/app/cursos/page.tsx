@@ -94,9 +94,9 @@ export default async function CoursesCatalogPage({
                   <Link href={`/cursos/${course.slug}`} className="pill-btn">
                     Ver estrutura e aulas
                   </Link>
-                  {course.hasFreeSample ? (
+                  {course.hasFreeSample && course.freeSampleOfferCode ? (
                     <Link
-                      href="/oferta/formacao-ia-amostra-bloco-1"
+                      href={`/oferta/${course.freeSampleOfferCode}`}
                       className="pill-btn pill-btn-secondary"
                     >
                       Amostra gratuita

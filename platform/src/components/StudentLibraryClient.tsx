@@ -12,6 +12,7 @@ interface Props {
   initialCourses: StudentLibraryCourse[];
   initialLives: StudentLiveItem[];
   initialCertificates: PublicCertificateRecord[];
+  availableFreeOffers?: Array<{ courseId: string; courseTitle: string; offerCode: string }>;
 }
 
 export function StudentLibraryClient({
@@ -19,15 +20,18 @@ export function StudentLibraryClient({
   initialCourses,
   initialLives,
   initialCertificates,
+  availableFreeOffers = [],
 }: Props) {
   const router = useRouter();
   const [enrolling, setEnrolling] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const hasFormacao = initialCourses.some((c) => c.slug === 'formacao-ia-anderzilla');
+  const primaryFreeOffer = availableFreeOffers[0] ?? null;
 
-  async function handleEnrollFree() {
+  async function handleEnrollFree(offerCode?: string) {
+    const targetCode = offerCode || primaryFreeOffer?.offerCode;
+    if (!targetCode) return;
     setEnrolling(true);
     setFeedback(null);
     setErrorMsg(null);
@@ -35,14 +39,14 @@ export function StudentLibraryClient({
       const res = await fetch('/api/v1/app/enroll-free', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ offerCode: 'formacao-ia-amostra-bloco-1' }),
+        body: JSON.stringify({ offerCode: targetCode }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string; message?: string };
       if (!res.ok || !data.ok) {
         setErrorMsg(data.error || 'Não foi possível ativar a amostra gratuita.');
         return;
       }
-      setFeedback(data.message || 'Amostra gratuita do Bloco 1 liberada na sua biblioteca.');
+      setFeedback(data.message || 'Amostra gratuita liberada na sua biblioteca.');
       router.refresh();
     } catch {
       setErrorMsg('Erro de rede ao ativar a amostra gratuita.');
@@ -95,18 +99,19 @@ export function StudentLibraryClient({
 
         {initialCourses.length === 0 ? (
           <div className="info-box">
-            <strong>Você ainda não possui cursos liberados nesta conta.</strong> Ative abaixo a
-            amostra gratuita do Bloco 1 da Formação IA (Aulas 1 a 3 + quiz de 10 questões) ou
-            confirme que usou o mesmo e-mail da sua compra.
+            <strong>Você ainda não possui cursos liberados nesta conta.</strong> Escolha uma
+            amostra gratuita disponível no catálogo ou confirme que usou o mesmo e-mail da sua compra.
             <div className="hero-actions" style={{ marginTop: 14 }}>
-              <button
-                type="button"
-                className="pill-btn"
-                onClick={handleEnrollFree}
-                disabled={enrolling}
-              >
-                {enrolling ? 'Ativando...' : 'Ativar amostra gratuita — Bloco 1'}
-              </button>
+              {primaryFreeOffer ? (
+                <button
+                  type="button"
+                  className="pill-btn"
+                  onClick={() => handleEnrollFree(primaryFreeOffer.offerCode)}
+                  disabled={enrolling}
+                >
+                  {enrolling ? 'Ativando...' : `Ativar amostra gratuita — ${primaryFreeOffer.courseTitle}`}
+                </button>
+              ) : null}
               <Link href="/cursos" className="pill-btn pill-btn-secondary">
                 Ver catálogo de cursos
               </Link>
@@ -153,16 +158,19 @@ export function StudentLibraryClient({
               ))}
             </div>
 
-            {!hasFormacao ? (
-              <div>
-                <button
-                  type="button"
-                  className="pill-btn pill-btn-secondary"
-                  onClick={handleEnrollFree}
-                  disabled={enrolling}
-                >
-                  {enrolling ? 'Ativando...' : 'Ativar amostra gratuita — Formação IA (Bloco 1)'}
-                </button>
+            {availableFreeOffers.length > 0 ? (
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                {availableFreeOffers.map((fo) => (
+                  <button
+                    key={fo.offerCode}
+                    type="button"
+                    className="pill-btn pill-btn-secondary"
+                    onClick={() => handleEnrollFree(fo.offerCode)}
+                    disabled={enrolling}
+                  >
+                    {enrolling ? 'Ativando...' : `Ativar amostra gratuita — ${fo.courseTitle}`}
+                  </button>
+                ))}
               </div>
             ) : null}
           </>

@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { getPublishedCourseBySlug } from '@/lib/catalog';
+import { getPublishedCourseBySlug, resolveCourseSlugAlias } from '@/lib/catalog';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,6 +23,10 @@ export default async function CourseDetailPage({
   const course = getPublishedCourseBySlug(slug);
 
   if (!course) {
+    const aliasTarget = resolveCourseSlugAlias(slug);
+    if (aliasTarget) {
+      redirect(`/cursos/${aliasTarget}`);
+    }
     notFound();
   }
 

@@ -166,6 +166,86 @@ export function grantEntitlement(
   return { entitlementId, created: true };
 }
 
+export function grantOfferEntitlements(
+  db: DatabaseSync,
+  input: {
+    offerSku: string;
+    userId?: string | null;
+    buyerEmailHash?: string | null;
+    sourceProvider: 'free_sample' | 'mercadopago' | 'hotmart' | 'manual';
+    sourceEventId?: string | null;
+    transactionCode?: string | null;
+    reason: string;
+    actor?: string;
+  },
+): { ok: true; grantedCount: number; entitlementIds: string[] } | { ok: false; code: 'unmapped_sku'; error: string } {
+  const offer = db
+    .prepare(`SELECT id, course_id, sku, access_scope FROM offers WHERE sku = ? LIMIT 1`)
+    .get(input.offerSku) as
+    | { id: string; course_id: string; sku: string; access_scope: string }
+    | undefined;
+
+  if (!offer) {
+    return {
+      ok: false,
+      code: 'unmapped_sku',
+      error: `SKU ${input.offerSku} não possui mapeamento único de oferta; encaminhado para revisão sem conceder acesso.`,
+    };
+  }
+
+  const explicitGrants = db
+    .prepare(
+      `SELECT course_id, course_version_id, access_scope
+       FROM offer_grants
+       WHERE offer_id = ?
+       ORDER BY created_at ASC`,
+    )
+    .all(offer.id) as Array<{
+    course_id: string;
+    course_version_id: string | null;
+    access_scope: string;
+  }>;
+
+  const grantsToApply =
+    explicitGrants.length > 0
+      ? explicitGrants
+      : [{ course_id: offer.course_id, course_version_id: null, access_scope: offer.access_scope }];
+
+  const entitlementIds: string[] = [];
+  for (let i = 0; i < grantsToApply.length; i += 1) {
+    const g = grantsToApply[i];
+    const perGrantEventId = input.sourceEventId
+      ? grantsToApply.length > 1
+        ? `${input.sourceEventId}:g${i}`
+        : input.sourceEventId
+      : null;
+    const res = grantEntitlement(db, {
+      userId: input.userId,
+      buyerEmailHash: input.buyerEmailHash,
+      courseId: g.course_id,
+      offerSku: grantsToApply.length > 1 ? `${offer.sku}::${g.access_scope}` : offer.sku,
+      accessScope: g.access_scope,
+      sourceProvider: input.sourceProvider,
+      sourceEventId: perGrantEventId,
+      transactionCode: input.transactionCode,
+      reason: input.reason,
+      actor: input.actor,
+    });
+    if (g.course_version_id) {
+      db.prepare(`UPDATE entitlements SET course_version_id = ?, offer_id = ? WHERE id = ?`).run(
+        g.course_version_id,
+        offer.id,
+        res.entitlementId,
+      );
+    } else {
+      db.prepare(`UPDATE entitlements SET offer_id = ? WHERE id = ?`).run(offer.id, res.entitlementId);
+    }
+    entitlementIds.push(res.entitlementId);
+  }
+
+  return { ok: true, grantedCount: entitlementIds.length, entitlementIds };
+}
+
 export function revokeOrSuspendByTransaction(
   db: DatabaseSync,
   input: {

@@ -104,7 +104,32 @@ function formatBrl(cents: number): string {
   );
 }
 
-export function PartnersDashboardClient({ data }: { data: PartnerDashboardData }) {
+interface AssignedPartnerCourse {
+  courseId: string;
+  slug: string;
+  title: string;
+  subtitle: string;
+  category: string;
+  status: string;
+  roles: string[];
+  offers: Array<{
+    id: string;
+    sku: string;
+    offerCode: string;
+    title: string;
+    priceCents: number | null;
+    isFree: boolean;
+    status: string;
+  }>;
+}
+
+export function PartnersDashboardClient({
+  data,
+  assignedCourses = [],
+}: {
+  data: PartnerDashboardData;
+  assignedCourses?: AssignedPartnerCourse[];
+}) {
   const router = useRouter();
   const [tab, setTab] = useState<'overview' | 'links' | 'instructor' | 'statement' | 'profile'>(
     'overview',
@@ -113,7 +138,13 @@ export function PartnersDashboardClient({ data }: { data: PartnerDashboardData }
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  const defaultCourse = assignedCourses[0] ?? null;
+  const defaultOffer =
+    defaultCourse?.offers.find((o) => !o.isFree) ?? defaultCourse?.offers[0] ?? null;
+
   // Forms
+  const [selectedCourseId, setSelectedCourseId] = useState(defaultCourse?.courseId ?? '');
+  const [selectedOfferSku, setSelectedOfferSku] = useState(defaultOffer?.sku ?? '');
   const [linkCode, setLinkCode] = useState('');
   const [linkCampaign, setLinkCampaign] = useState('lancamento');
   const [couponCode, setCouponCode] = useState('');
@@ -122,6 +153,14 @@ export function PartnersDashboardClient({ data }: { data: PartnerDashboardData }
   const [payoutHolder, setPayoutHolder] = useState('');
   const [payoutKey, setPayoutKey] = useState('');
   const [appealNote, setAppealNote] = useState('');
+
+  const activeCourse =
+    assignedCourses.find((c) => c.courseId === selectedCourseId) ?? defaultCourse;
+  const activeOfferSku =
+    selectedOfferSku ||
+    activeCourse?.offers.find((o) => !o.isFree)?.sku ||
+    activeCourse?.offers[0]?.sku ||
+    '';
 
   const canPromote = data.profile.roles.some((r) =>
     ['affiliate', 'seller', 'partner'].includes(r),
@@ -160,8 +199,8 @@ export function PartnersDashboardClient({ data }: { data: PartnerDashboardData }
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          courseId: 'course_formacao_ia_anderzilla',
-          offerSku: 'CM-IA-M1-PAID',
+          courseId: activeCourse?.courseId || selectedCourseId,
+          offerSku: activeOfferSku,
           code: linkCode,
           campaign: linkCampaign,
         }),
@@ -189,8 +228,8 @@ export function PartnersDashboardClient({ data }: { data: PartnerDashboardData }
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          courseId: 'course_formacao_ia_anderzilla',
-          offerSku: 'CM-IA-M1-PAID',
+          courseId: activeCourse?.courseId || selectedCourseId,
+          offerSku: activeOfferSku,
           code: couponCode,
           campaign: linkCampaign,
           discountType: 'percent',
@@ -353,7 +392,53 @@ export function PartnersDashboardClient({ data }: { data: PartnerDashboardData }
           >
             Contrato e repasse
           </button>
+          <Link href="/partners/courses" className="tab-btn" style={{ textDecoration: 'none' }}>
+            Meus cursos ({assignedCourses.length})
+          </Link>
         </div>
+
+        {canPromote && assignedCourses.length > 0 ? (
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 12, alignItems: 'center' }}>
+            <label htmlFor="partner-course-select" className="meta-ref" style={{ margin: 0 }}>
+              Curso ativo para novos links/cupons:
+            </label>
+            <select
+              id="partner-course-select"
+              className="field-input"
+              style={{ maxWidth: 280 }}
+              value={activeCourse?.courseId ?? ''}
+              onChange={(e) => {
+                const nextId = e.target.value;
+                setSelectedCourseId(nextId);
+                const nextCourse = assignedCourses.find((c) => c.courseId === nextId);
+                const nextOffer =
+                  nextCourse?.offers.find((o) => !o.isFree) ?? nextCourse?.offers[0] ?? null;
+                setSelectedOfferSku(nextOffer?.sku ?? '');
+              }}
+            >
+              {assignedCourses.map((c) => (
+                <option key={c.courseId} value={c.courseId}>
+                  {c.title}
+                </option>
+              ))}
+            </select>
+            {activeCourse && activeCourse.offers.length > 0 ? (
+              <select
+                aria-label="Oferta do curso selecionado"
+                className="field-input"
+                style={{ maxWidth: 240 }}
+                value={activeOfferSku}
+                onChange={(e) => setSelectedOfferSku(e.target.value)}
+              >
+                {activeCourse.offers.map((o) => (
+                  <option key={o.sku} value={o.sku}>
+                    {o.sku} — {o.title}
+                  </option>
+                ))}
+              </select>
+            ) : null}
+          </div>
+        ) : null}
       </div>
 
       {feedback ? (

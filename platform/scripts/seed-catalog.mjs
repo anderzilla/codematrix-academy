@@ -619,6 +619,52 @@ export function runSeed({
       'active',
     );
 
+    // 11b. Vincula versão ativa e popula offer_grants explícitos para todas as ofertas da Formação IA
+    db.prepare(`UPDATE courses SET active_version_id = 'ver_formacao_ia_v1' WHERE id = ?`).run(courseId);
+    const courseOffers = db
+      .prepare(`SELECT id, course_id, access_scope FROM offers WHERE course_id = ?`)
+      .all(courseId);
+    const upsertGrant = db.prepare(
+      `INSERT INTO offer_grants (id, offer_id, course_id, course_version_id, grant_type, target_code, access_scope)
+       VALUES (?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT(offer_id, course_id, access_scope) DO UPDATE SET
+         course_version_id = excluded.course_version_id,
+         grant_type = excluded.grant_type,
+         target_code = excluded.target_code`,
+    );
+    for (const ofr of courseOffers) {
+      const scope = String(ofr.access_scope);
+      const grantType = scope.includes(':block:')
+        ? 'block'
+        : scope.includes(':module:')
+          ? 'module'
+          : 'course';
+      const targetCode = scope.split(':').pop() || 'full';
+      upsertGrant.run(
+        `og_${ofr.id}`,
+        ofr.id,
+        ofr.course_id,
+        'ver_formacao_ia_v1',
+        grantType,
+        targetCode,
+        scope,
+      );
+    }
+
+    // Relatório de integridade / órfãos
+    report.integrity = {
+      orphanModules: Number(
+        db.prepare(`SELECT COUNT(*) AS c FROM modules WHERE course_id NOT IN (SELECT id FROM courses)`).get().c,
+      ),
+      orphanBlocks: Number(
+        db.prepare(`SELECT COUNT(*) AS c FROM blocks WHERE module_id NOT IN (SELECT id FROM modules)`).get().c,
+      ),
+      orphanLessons: Number(
+        db.prepare(`SELECT COUNT(*) AS c FROM lessons WHERE block_id NOT IN (SELECT id FROM blocks)`).get().c,
+      ),
+      offerGrantsCount: Number(db.prepare(`SELECT COUNT(*) AS c FROM offer_grants`).get().c),
+    };
+
     db.exec('COMMIT');
   } catch (err) {
     db.exec('ROLLBACK');
@@ -666,6 +712,10 @@ export function runSeed({
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
 if (isMain) {
-  const result = runSeed();
-  console.log('Seed concluído com sucesso:', JSON.stringify(result.migrated));
+  const dryRun = process.argv.includes('--dry-run');
+  const result = runSeed(dryRun ? { dbPath: ':memory:', reportPath: '' } : {});
+  console.log(
+    dryRun ? 'Dry-run concluído com sucesso:' : 'Seed concluído com sucesso:',
+    JSON.stringify({ migrated: result.migrated, integrity: result.integrity }),
+  );
 }

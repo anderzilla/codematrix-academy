@@ -473,3 +473,59 @@ CREATE TABLE IF NOT EXISTS waitlist_leads (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (course_id, target_scope, email)
 );
+
+-- ============================================================================
+-- ETAPA 6: Multi-curso completo (PG 16) — offer_grants, course_partner_assignments, slug aliases
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS schema_migrations (
+  version TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS course_slug_aliases (
+  id TEXT PRIMARY KEY,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  old_slug TEXT NOT NULL UNIQUE,
+  created_by TEXT NOT NULL DEFAULT 'system',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS offer_grants (
+  id TEXT PRIMARY KEY,
+  offer_id TEXT NOT NULL REFERENCES offers(id) ON DELETE CASCADE,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  course_version_id TEXT REFERENCES course_versions(id) ON DELETE SET NULL,
+  grant_type TEXT NOT NULL CHECK (grant_type IN ('course', 'module', 'block')),
+  target_code TEXT NOT NULL DEFAULT 'full',
+  access_scope TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (offer_id, course_id, access_scope)
+);
+
+CREATE TABLE IF NOT EXISTS course_partner_assignments (
+  id TEXT PRIMARY KEY,
+  partner_id TEXT NOT NULL REFERENCES partner_profiles(id) ON DELETE CASCADE,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  role TEXT NOT NULL CHECK (role IN ('instructor', 'affiliate', 'seller', 'partner')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'suspended', 'revoked', 'expired')),
+  scope_json JSONB NOT NULL DEFAULT '{}'::jsonb,
+  terms_version TEXT,
+  terms_accepted_at TIMESTAMPTZ,
+  commission_rule_id TEXT REFERENCES commission_rules(id) ON DELETE SET NULL,
+  valid_from TIMESTAMPTZ,
+  valid_until TIMESTAMPTZ,
+  granted_by TEXT NOT NULL DEFAULT 'system',
+  revoked_by TEXT,
+  revoked_at TIMESTAMPTZ,
+  impact_note TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (partner_id, course_id, role)
+);
+
+CREATE INDEX IF NOT EXISTS idx_pg_offer_grants_offer_course ON offer_grants(offer_id, course_id);
+CREATE INDEX IF NOT EXISTS idx_pg_cpa_partner_course_status ON course_partner_assignments(partner_id, course_id, status);
+CREATE INDEX IF NOT EXISTS idx_pg_cpa_course_role_status ON course_partner_assignments(course_id, role, status);
+CREATE INDEX IF NOT EXISTS idx_pg_slug_aliases_old_slug ON course_slug_aliases(old_slug);

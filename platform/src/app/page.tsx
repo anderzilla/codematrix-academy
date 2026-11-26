@@ -127,9 +127,9 @@ export default function AcademyHomePage() {
                     <Link href={`/cursos/${course.slug}`} className="pill-btn">
                       Ver aulas e módulos
                     </Link>
-                    {course.hasFreeSample ? (
+                    {course.hasFreeSample && course.freeSampleOfferCode ? (
                       <Link
-                        href="/oferta/formacao-ia-amostra-bloco-1"
+                        href={`/oferta/${course.freeSampleOfferCode}`}
                         className="pill-btn pill-btn-secondary"
                       >
                         Ver amostra gratuita

@@ -4,7 +4,7 @@ import { PartnersDashboardClient } from '@/components/PartnersDashboardClient';
 import { getSessionUser } from '@/lib/auth';
 import { getDb } from '@/lib/db';
 import { getPartnerDashboard } from '@/lib/partners';
-import { getPartnerContext } from '@/lib/rbac';
+import { getPartnerContext, listPartnerAssignedCourses } from '@/lib/rbac';
 
 export const dynamic = 'force-dynamic';
 
@@ -75,6 +75,7 @@ export default async function PartnersPage() {
   }
 
   const dashboard = getPartnerDashboard(db, ctx);
+  const assignedCourses = listPartnerAssignedCourses(db, ctx);
 
   return (
     <section className="section">
@@ -82,6 +83,7 @@ export default async function PartnersPage() {
         <Breadcrumbs items={[{ label: 'Início', href: '/' }, { label: 'Painel de Parceiros' }]} />
         <PartnersDashboardClient
           data={dashboard as unknown as Parameters<typeof PartnersDashboardClient>[0]['data']}
+          assignedCourses={assignedCourses}
         />
       </div>
     </section>

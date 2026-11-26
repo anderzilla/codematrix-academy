@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import { hashEmail } from '@/lib/auth';
-import { grantEntitlement, revokeOrSuspendByTransaction } from '@/lib/entitlements';
+import { grantOfferEntitlements, revokeOrSuspendByTransaction } from '@/lib/entitlements';
 import { appendLedgerEntry } from '@/lib/ledger';
 import { attributeHotmartCommission, blockCommissionsByTransaction } from '@/lib/partners';
 
@@ -459,19 +459,17 @@ export function processMercadoPagoPaymentEvent(
         `UPDATE orders SET status = 'approved', provider_payment_id = ?, updated_at = datetime('now') WHERE id = ?`,
       ).run(input.providerPaymentId, order.id);
 
-      grantEntitlement(db, {
+      const grantRes = grantOfferEntitlements(db, {
+        offerSku: order.offer_sku,
         userId: order.user_id,
         buyerEmailHash: order.buyer_email_hash,
-        courseId: order.course_id,
-        offerSku: order.offer_sku,
-        accessScope: order.access_scope,
         sourceProvider: 'mercadopago',
         sourceEventId: input.eventId,
         transactionCode: order.order_code,
         reason: `Pagamento Mercado Pago aprovado (${order.payment_method})`,
         actor: 'mercadopago_webhook',
       });
-      entitlementStatus = 'granted';
+      entitlementStatus = grantRes.ok ? 'granted' : 'needs_review';
 
       const comm = attributeHotmartCommission(db, {
         courseId: order.course_id,

@@ -3,6 +3,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { StudentLibraryClient } from '@/components/StudentLibraryClient';
 import { getSessionUser } from '@/lib/auth';
 import { listStudentCertificates } from '@/lib/certificates';
+import { listPublishedCourses } from '@/lib/catalog';
 import { getDb } from '@/lib/db';
 import { listAuthorizedLivesForUser } from '@/lib/lives';
 import { getStudentLibrary } from '@/lib/student';
@@ -46,6 +47,14 @@ export default async function StudentAppPage() {
   const courses = getStudentLibrary(db, user.id);
   const lives = listAuthorizedLivesForUser(db, user.id);
   const certificates = listStudentCertificates(db, user.id);
+  const enrolledSlugs = new Set(courses.map((c) => c.slug));
+  const availableFreeOffers = listPublishedCourses()
+    .filter((c) => c.hasFreeSample && c.freeSampleOfferCode && !enrolledSlugs.has(c.slug))
+    .map((c) => ({
+      courseId: c.id,
+      courseTitle: c.title,
+      offerCode: c.freeSampleOfferCode!,
+    }));
 
   return (
     <section className="section">
@@ -56,6 +65,7 @@ export default async function StudentAppPage() {
           initialCourses={courses}
           initialLives={lives}
           initialCertificates={certificates}
+          availableFreeOffers={availableFreeOffers}
         />
       </div>
     </section>
