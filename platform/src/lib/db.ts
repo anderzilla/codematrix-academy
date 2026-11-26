@@ -57,6 +57,10 @@ function applyIncrementalMigrations(db: DatabaseSync): void {
     `INSERT OR IGNORE INTO schema_migrations (version, name)
      VALUES ('20261126_01', 'multicourse_offer_grants_partner_assignments_and_versions')`,
   ).run();
+  db.prepare(
+    `INSERT OR IGNORE INTO schema_migrations (version, name)
+     VALUES ('20261126_02', 'school_ops_cohorts_sessions_tickets_inbox_calendar')`,
+  ).run();
 }
 
 export function openDatabase(dbPath = resolveDbPath()): DatabaseSync {

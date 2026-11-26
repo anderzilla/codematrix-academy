@@ -529,3 +529,165 @@ CREATE INDEX IF NOT EXISTS idx_pg_offer_grants_offer_course ON offer_grants(offe
 CREATE INDEX IF NOT EXISTS idx_pg_cpa_partner_course_status ON course_partner_assignments(partner_id, course_id, status);
 CREATE INDEX IF NOT EXISTS idx_pg_cpa_course_role_status ON course_partner_assignments(course_id, role, status);
 CREATE INDEX IF NOT EXISTS idx_pg_slug_aliases_old_slug ON course_slug_aliases(old_slug);
+
+-- ============================================================================
+-- ETAPA 7: Operação Escolar, Turmas, Sessões, Tickets, Inbox e Calendário (PG 16)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS cohorts (
+  id TEXT PRIMARY KEY,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  course_version_id TEXT REFERENCES course_versions(id) ON DELETE SET NULL,
+  code TEXT NOT NULL,
+  name TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'planned' CHECK (status IN ('planned', 'active', 'completed', 'archived')),
+  timezone TEXT NOT NULL DEFAULT 'America/Sao_Paulo',
+  current_block_code TEXT,
+  starts_at TIMESTAMPTZ,
+  ends_at TIMESTAMPTZ,
+  created_by TEXT NOT NULL DEFAULT 'system',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (course_id, code)
+);
+
+CREATE TABLE IF NOT EXISTS cohort_memberships (
+  id TEXT PRIMARY KEY,
+  cohort_id TEXT NOT NULL REFERENCES cohorts(id) ON DELETE CASCADE,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  course_version_id TEXT REFERENCES course_versions(id) ON DELETE SET NULL,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'suspended', 'transferred', 'completed')),
+  origin TEXT NOT NULL DEFAULT 'manual',
+  transferred_from_cohort_id TEXT REFERENCES cohorts(id) ON DELETE SET NULL,
+  transfer_note TEXT,
+  enrolled_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (cohort_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS class_sessions (
+  id TEXT PRIMARY KEY,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  course_version_id TEXT REFERENCES course_versions(id) ON DELETE SET NULL,
+  cohort_id TEXT NOT NULL REFERENCES cohorts(id) ON DELETE CASCADE,
+  block_id TEXT REFERENCES blocks(id) ON DELETE SET NULL,
+  lesson_id TEXT REFERENCES lessons(id) ON DELETE SET NULL,
+  instructor_partner_id TEXT REFERENCES partner_profiles(id) ON DELETE SET NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  starts_at TIMESTAMPTZ NOT NULL,
+  ends_at TIMESTAMPTZ NOT NULL,
+  timezone TEXT NOT NULL DEFAULT 'America/Sao_Paulo',
+  status TEXT NOT NULL DEFAULT 'scheduled',
+  attendance_required BOOLEAN NOT NULL DEFAULT FALSE,
+  stream_live_uid TEXT,
+  replay_stream_uid TEXT,
+  cancel_reason TEXT,
+  created_by TEXT NOT NULL DEFAULT 'system',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS module_completions (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  course_version_id TEXT REFERENCES course_versions(id) ON DELETE SET NULL,
+  cohort_id TEXT REFERENCES cohorts(id) ON DELETE SET NULL,
+  module_id TEXT NOT NULL REFERENCES modules(id) ON DELETE CASCADE,
+  completed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  evidence_json JSONB NOT NULL DEFAULT '{}'::jsonb,
+  actor TEXT NOT NULL DEFAULT 'system',
+  UNIQUE (user_id, module_id, course_version_id)
+);
+
+CREATE TABLE IF NOT EXISTS support_tickets (
+  id TEXT PRIMARY KEY,
+  ticket_code TEXT NOT NULL UNIQUE,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id TEXT REFERENCES courses(id) ON DELETE SET NULL,
+  cohort_id TEXT REFERENCES cohorts(id) ON DELETE SET NULL,
+  category TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  description TEXT NOT NULL,
+  priority TEXT NOT NULL DEFAULT 'normal',
+  status TEXT NOT NULL DEFAULT 'new',
+  assigned_to_user_id TEXT REFERENCES users(id) ON DELETE SET NULL,
+  sla_due_at TIMESTAMPTZ,
+  resolved_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS ticket_messages (
+  id TEXT PRIMARY KEY,
+  ticket_id TEXT NOT NULL REFERENCES support_tickets(id) ON DELETE CASCADE,
+  author_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  author_role TEXT NOT NULL,
+  body TEXT NOT NULL,
+  is_internal_note BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS user_communication_preferences (
+  user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  operational_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+  marketing_opt_in BOOLEAN NOT NULL DEFAULT FALSE,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS announcements (
+  id TEXT PRIMARY KEY,
+  category TEXT NOT NULL,
+  urgency TEXT NOT NULL DEFAULT 'normal',
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  action_url TEXT,
+  audience_type TEXT NOT NULL,
+  course_id TEXT REFERENCES courses(id) ON DELETE SET NULL,
+  cohort_id TEXT REFERENCES cohorts(id) ON DELETE SET NULL,
+  session_id TEXT REFERENCES class_sessions(id) ON DELETE SET NULL,
+  target_user_id TEXT REFERENCES users(id) ON DELETE SET NULL,
+  valid_from TIMESTAMPTZ,
+  valid_until TIMESTAMPTZ,
+  version INTEGER NOT NULL DEFAULT 1,
+  snapshot_json JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_by TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS announcement_deliveries (
+  id TEXT PRIMARY KEY,
+  announcement_id TEXT NOT NULL REFERENCES announcements(id) ON DELETE CASCADE,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  dedup_key TEXT NOT NULL UNIQUE,
+  status TEXT NOT NULL DEFAULT 'unread',
+  delivered_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  read_at TIMESTAMPTZ,
+  archived_at TIMESTAMPTZ
+);
+
+CREATE TABLE IF NOT EXISTS calendar_events (
+  id TEXT PRIMARY KEY,
+  event_type TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  starts_at TIMESTAMPTZ NOT NULL,
+  ends_at TIMESTAMPTZ NOT NULL,
+  timezone TEXT NOT NULL DEFAULT 'America/Sao_Paulo',
+  status TEXT NOT NULL DEFAULT 'scheduled',
+  audience_scope TEXT NOT NULL,
+  course_id TEXT REFERENCES courses(id) ON DELETE SET NULL,
+  cohort_id TEXT REFERENCES cohorts(id) ON DELETE SET NULL,
+  partner_id TEXT REFERENCES partner_profiles(id) ON DELETE SET NULL,
+  target_user_id TEXT REFERENCES users(id) ON DELETE SET NULL,
+  source_entity_type TEXT,
+  source_entity_id TEXT,
+  financial_entry_id TEXT REFERENCES financial_ledger(id) ON DELETE SET NULL,
+  recurrence_rule TEXT,
+  recurrence_group_id TEXT,
+  created_by TEXT NOT NULL DEFAULT 'system',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
